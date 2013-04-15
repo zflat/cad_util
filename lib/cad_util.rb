@@ -1,5 +1,10 @@
 require "cad_util/version"
+require "cad_util/connection"
 
 module CadUtil
-  # Your code goes here...
+
+  # Config path to utilities
+
+
+  # Start the server
 end
