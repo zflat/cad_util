@@ -1,6 +1,5 @@
-require "win32ole"
-
 module CadUtil
+
   module Connection
 
     def pdm
@@ -17,6 +16,14 @@ module CadUtil
     def app
       @app ||= WIN32OLE.new('SldWorks.Application')
     end # app
+
+    def active_model
+      ModelDoc.new app.ActiveDoc
+    end
+
+    def get_current_working
+      app.GetCurrentWorkingDirectory
+    end
 
   end # module Connection
 end # module CadUtil
