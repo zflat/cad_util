@@ -22,4 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", ">= 1.0.3"
   spec.add_development_dependency "basic_decorator", "~> 0.2"
+  spec.add_development_dependency "clipboard", "~> 1.0.1"
+  spec.add_development_dependency "ffi", "~> 1.7.0"
+  
 end
