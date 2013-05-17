@@ -23,5 +23,18 @@ module CadUtil
 
   plugins = PluginJob::Collection.new({'MainCategory' => ['SavePreview']}, CadUtil::Utility)
 
-  # Start the server
+  #######################
+  # Create the controller
+  require "plugin_job/hosts/gui_host"
+  controller = PluginJob::HostController.new(GuiHost, plugins, log)
+
+  ###################
+  # Set up the server
+  server_config = {"host_ip" => "localhost", "port" => 3333}
+  server = PluginJob::Dispatcher.new(controller, server_config)
+
+  #####################
+  # Run the application
+  server.exec_app
+
 end
