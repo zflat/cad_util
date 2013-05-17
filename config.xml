@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConfigurationFile>
+  <Config host_ip="localhost" host_port="3333" proc_path="C:\CAD_Setup\Addin\proc.bat" />
+  <Config command="Sleepy" name="Sleep" tooltip="Sleep for a quick pause"  hint="Sleep for a quick pause" />
+  <Config command="exit" name="Restart launcher" tooltip="Restart launcher"  hint="Restart the add-in" />
+</ConfigurationFile>
