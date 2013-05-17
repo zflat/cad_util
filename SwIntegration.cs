@@ -38,17 +38,25 @@ namespace PluginClient
         public static String callback_prefix = "call_plugin";
 
         private List<Dictionary<String, String>> plugins;
-        public Type t_container;
+        private Dictionary<String, String> config;
+
         public object callback_container;
 
-        public Socket dispatcher;
+        private static String host_ip = "localhost";
+        private static int host_port = 3333;
+        private static String host_proc_path = @"C:\CAD_Setup\Addin\proc.bat"; // @"h:\sandbox\plugin_job\spec\script\plugin_proc.rb";
 
-        public PluginCall(List<Dictionary<String, String>> plugins_list)
+        public PluginCall(ConfigInfo config_data)
         {
-            plugins = plugins_list;
-            build_container();
-            //connect_dispatcher("localhost", 3333);
+            plugins = config_data.list();
+            callback_container = build_container();
+            config = config_data.host_info();
+
+            host_port = Convert.ToInt32(config["host_port"]);
+            host_ip = config["host_ip"];
+            host_proc_path = config["proc_path"];
         }
+
 
         public static void call_plugin_callback(String command_function)
         {
@@ -56,11 +64,8 @@ namespace PluginClient
             
             try
             {
-                // http://tech.pro/tutorial/704/csharp-tutorial-simple-threaded-tcp-server
-                IPAddress[] IPs = Dns.GetHostAddresses("localhost");
-                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Socket s = get_connection();
 
-                s.Connect(IPs[1], 3333);
                 ASCIIEncoding encoder = new ASCIIEncoding();
                 byte[] buffer = encoder.GetBytes(command+"\n");
                 int n_sent = s.Send(buffer);
@@ -72,8 +77,57 @@ namespace PluginClient
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(e.Message);
+                System.Windows.Forms.MessageBox.Show(e.GetType() + " " + e.Message);
             }
+        }
+
+        public static Socket get_connection()
+        {
+            Socket s = try_connect();
+            if (null == s)
+            {
+                s = run_host();
+            }
+            return s;
+        }
+        
+        public static Socket run_host()
+        {
+            Socket s = null;
+            using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+            {
+                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
+                info.Arguments = "";
+                info.RedirectStandardInput = true;
+                info.RedirectStandardOutput = true;
+                info.UseShellExecute = false;
+                info.CreateNoWindow = true;
+                p.StartInfo = info;
+                p.Start();
+                while(s == null){
+                    s = try_connect();
+                    System.Threading.Thread.Sleep(10);
+                }
+            }
+            return s;
+        }
+
+
+        public static Socket try_connect()
+        {
+            // http://tech.pro/tutorial/704/csharp-tutorial-simple-threaded-tcp-server
+            IPAddress[] IPs = Dns.GetHostAddresses(host_ip);
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                s.Connect(IPs[1], host_port);
+            }
+            catch(System.Net.Sockets.SocketException)
+            {
+                s = null;
+            }
+            
+            return s;
         }
 
         public static String prefixed_callback(String command)
@@ -86,8 +140,9 @@ namespace PluginClient
             return callback_function_name;
         }
 
-        private void build_container()
+        private object build_container()
         {
+            Type t_container;
             Guid g = Guid.NewGuid();
             System.Reflection.AssemblyName asmname = new System.Reflection.AssemblyName();
             asmname.Name = "temp" + g;
@@ -97,7 +152,7 @@ namespace PluginClient
 
             populate_callbacks(tb);
             t_container = tb.CreateType();
-            callback_container = Activator.CreateInstance(t_container);
+            return Activator.CreateInstance(t_container);            
         }
         
         private void populate_callbacks(TypeBuilder tb)
@@ -117,18 +172,73 @@ namespace PluginClient
             il.Emit(OpCodes.Ldstr, command);
             il.EmitCall(OpCodes.Call, mi, null);
             il.Emit(OpCodes.Ret);
+        }	
+    }
+
+    public class ConfigInfo
+    {
+        List<Dictionary<String, String>> plugin_list;
+        Dictionary<String, String> host_info_dict;
+
+        public ConfigInfo(String str_config_path)
+        {
+            XDocument config_xml = null;
+            plugin_list = new List<Dictionary<string, string>>();
+            host_info_dict = new Dictionary<string,string>();
+
+            try
+            {
+                Stream xml_stream = File.OpenRead(str_config_path);
+                config_xml = XDocument.Load(xml_stream);
+                xml_stream.Dispose();
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(e.Message, "Error loading configuration file");
+            }
+
+            try
+            {
+                foreach (XElement plugin_config in config_xml.Descendants())
+                {
+                    XAttribute command_attrib = plugin_config.Attribute("command");
+                    XAttribute host_attrib= plugin_config.Attribute("host_ip");
+
+                    if (command_attrib != null)
+                    {
+                        Dictionary<String, String> info = new Dictionary<string, string>();
+                        info.Add("command", command_attrib.Value);
+                        info.Add("name", plugin_config.Attribute("name").Value);
+                        info.Add("tooltip", plugin_config.Attribute("tooltip").Value);
+                        info.Add("hint", plugin_config.Attribute("hint").Value);
+                        plugin_list.Add(info);
+                    }
+
+                    
+                    if (host_attrib != null)
+                    {
+                        host_info_dict.Add("host_ip", host_attrib.Value);
+                        host_info_dict.Add("host_port", plugin_config.Attribute("host_port").Value);
+                        host_info_dict.Add("proc_path", plugin_config.Attribute("proc_path").Value);
+                    }
+                     
+                }
+            }
+            catch(Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(e.Message, "Error parsing the configuration data");
+            }
         }
 
-        private void connect_dispatcher(string host, int port)
+        public List<Dictionary<String, String>> list()
         {
-            IPAddress[] IPs = Dns.GetHostAddresses(host);
+            return plugin_list;
+        }
 
-            dispatcher = new Socket(AddressFamily.InterNetwork,
-                SocketType.Stream,
-                ProtocolType.Tcp);
-
-            dispatcher.Connect(IPs[0], port);
-        }		
+        public Dictionary<String, String> host_info()
+        {
+            return host_info_dict;
+        }
     }
     
     public class SwIntegration : ISwAddin
@@ -137,27 +247,20 @@ namespace PluginClient
         private int mSWCookie;
 
         private CommandManager mCommandManager { get; set; }
-        private int mCommandGroupId = 1;
+        private int mCommandGroupId = 15201;
         private string plugin_icon_img_path;
-
-        private List<DynamicMethod> plugin_callbacks;
-        public List<PluginInvoker> plugin_delegates;
-
-
+        
         List<Dictionary<String, String>> plugin_info;
+        ConfigInfo config_info;
+
         private bool plugins_populated = false;
         public dynamic callback_handler;
-
-        public delegate void PluginInvoker();
-        private static Type[] call_plugin_args = { typeof(String) };
-        private static System.Reflection.MethodInfo call_plugin_info = typeof(SwIntegration).GetMethod("request_plugin", call_plugin_args);
-
+        
         public bool ConnectToSW(object ThisSW, int Cookie)
         {
             mSWApplication = (SldWorks)ThisSW;
             mSWCookie = Cookie;
             mCommandManager = mSWApplication.GetCommandManager(mSWCookie);
-
 
             bool result = mSWApplication.SetAddinCallbackInfo(0, this, mSWCookie);
             this.UISetup();
@@ -180,14 +283,12 @@ namespace PluginClient
         /// </summary>
         private void UISetup()
         {
-            plugin_callbacks = new List<DynamicMethod>();
-            plugin_delegates = new List<PluginInvoker>();
-
-            plugin_info = load_config(@"C:\CAD_Setup\Addin\config.xml");
+            config_info = new ConfigInfo(@"C:\CAD_Setup\Addin\config.xml");
+            plugin_info = config_info.list();
 
             try
             {
-                callback_handler = (new PluginCall(plugin_info)).callback_container;
+                callback_handler = (new PluginCall(config_info)).callback_container;
                 mSWApplication.SetAddinCallbackInfo(0, (object)callback_handler, mSWCookie);
             }
             catch (Exception e)
@@ -217,45 +318,6 @@ namespace PluginClient
             return true;
         }
 
-        private List<Dictionary<String, String>> load_config(String str_config_path)
-        {
-            XDocument config_xml;
-            List<Dictionary<String, String>> plugin_list = new List<Dictionary<string, string>>();
-            
-            try
-            {
-                Stream xml_stream = File.OpenRead(str_config_path);
-                config_xml = XDocument.Load(xml_stream);
-                xml_stream.Dispose();
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.Message, "Error loading configuration file");
-                return plugin_list;
-            }
-
-            try
-            {
-                foreach (XElement plugin_config in config_xml.Descendants())
-                {
-                    XAttribute command_attrib = plugin_config.Attribute("command");
-                    if (command_attrib != null)
-                    {
-                        Dictionary<String, String> info = new Dictionary<string, string>();
-                        info.Add("command", command_attrib.Value);
-                        info.Add("name", plugin_config.Attribute("name").Value);
-                        info.Add("tooltip", plugin_config.Attribute("tooltip").Value);
-                        info.Add("hint", plugin_config.Attribute("hint").Value);
-                        plugin_list.Add(info);
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.Message, "Error parsing the configuration data");
-            }
-            return plugin_list;
-        }
 
         public bool enable_plugin()
         {
@@ -264,7 +326,7 @@ namespace PluginClient
 
         private void UITeardown()
         {
-            throw new NotImplementedException();
+            int removed = mCommandManager.RemoveCommandGroup2(mCommandGroupId, true);
         }
 
         [ComRegisterFunction()]
