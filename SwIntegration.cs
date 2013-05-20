@@ -39,6 +39,7 @@ namespace PluginClient
 
         private List<Dictionary<String, String>> plugins;
         private Dictionary<String, String> config;
+        private static SwIntegration integration = null;
 
         public object callback_container;
 
@@ -46,8 +47,10 @@ namespace PluginClient
         private static int host_port = 3333;
         private static String host_proc_path = @"C:\CAD_Setup\Addin\proc.bat"; // @"h:\sandbox\plugin_job\spec\script\plugin_proc.rb";
 
-        public PluginCall(ConfigInfo config_data)
+        public PluginCall(ConfigInfo config_data, SwIntegration caller)
         {
+            integration = caller;
+
             plugins = config_data.list();
             callback_container = build_container();
             config = config_data.host_info();
@@ -57,6 +60,20 @@ namespace PluginClient
             host_proc_path = config["proc_path"];
         }
 
+
+        public static void call_exit(String arg)
+        {
+            if (null != integration)
+            {
+                integration.reset_plugin_commands();
+            }
+            call_plugin_callback("exit");
+        }
+
+        public static void call_list(String arg)
+        {
+            call_plugin_callback("");
+        }
 
         public static void call_plugin_callback(String command_function)
         {
@@ -152,21 +169,34 @@ namespace PluginClient
 
             populate_callbacks(tb);
             t_container = tb.CreateType();
-            return Activator.CreateInstance(t_container);            
+            return Activator.CreateInstance(t_container);
         }
         
         private void populate_callbacks(TypeBuilder tb)
         {
             foreach (Dictionary<String, String> p in plugins)
             {
-                populate_command_callback(tb, p["command"]);
+                String cmd = p["command"];
+                String callback_name = "call_plugin_callback";
+
+                // special case for exit and list
+                if (cmd == "")
+                {
+                    callback_name = "call_list";
+                }
+                else if (cmd.ToUpper() == "EXIT")
+                {
+                    callback_name = "call_exit";
+                }
+
+                populate_command_callback(tb, callback_name, cmd);
             }
         }
 
-        private void populate_command_callback(TypeBuilder tb, String command)
+        private void populate_command_callback(TypeBuilder tb, String callback_function_name, String command)
         {
-            MethodBuilder mb = tb.DefineMethod("call_plugin_" + command, System.Reflection.MethodAttributes.Public, typeof(void), null);
-            System.Reflection.MethodInfo mi = this.GetType().GetMethod("call_plugin_callback", new Type[] { typeof(string) });
+            MethodBuilder mb = tb.DefineMethod( prefixed_callback(command), System.Reflection.MethodAttributes.Public, typeof(void), null);
+            System.Reflection.MethodInfo mi = this.GetType().GetMethod(callback_function_name, new Type[] { typeof(string) });
             ILGenerator il = mb.GetILGenerator();
             //il.Emit(OpCodes.Nop);
             il.Emit(OpCodes.Ldstr, command);
@@ -247,6 +277,7 @@ namespace PluginClient
         private int mSWCookie;
 
         private CommandManager mCommandManager { get; set; }
+        private CommandGroup mCommandGroup;
         private int mCommandGroupId = 15201;
         private string plugin_icon_img_path;
         
@@ -288,7 +319,7 @@ namespace PluginClient
 
             try
             {
-                callback_handler = (new PluginCall(config_info)).callback_container;
+                callback_handler = (new PluginCall(config_info, this)).callback_container;
                 mSWApplication.SetAddinCallbackInfo(0, (object)callback_handler, mSWCookie);
             }
             catch (Exception e)
@@ -297,7 +328,7 @@ namespace PluginClient
             }
 
             int err = 0;
-            CommandGroup mCommandGroup = mCommandManager.CreateCommandGroup2(mCommandGroupId, "Automation Utilities", "Utility scripts for automating tasks.",
+            mCommandGroup = mCommandManager.CreateCommandGroup2(mCommandGroupId, "Automation Utilities", "Utility scripts for automating tasks.",
                     "Plugins used to automate solidworks tasks", -1, true, ref err);
             
             plugins_populated = !plugins_populated && populate_plugin_commands(mCommandGroup, plugin_info);
@@ -307,15 +338,47 @@ namespace PluginClient
 
         private bool populate_plugin_commands(CommandGroup group, List<Dictionary<String, String>> plugins)
         {
-            if (plugins_populated) { return false; }
+            // if (plugins_populated) { return false; }
             // All command items to be a menu and toolbar item
             int itemType = (int)(swCommandItemType_e.swMenuItem | swCommandItemType_e.swToolbarItem);
             for (int i = 0; i < plugins.Count; i++)
             {
+                String cmd = plugins[i]["command"];
+                String strCallback = "";
+
+                // Special cases List and Exit
+                if (cmd.ToUpper() == "EXIT")
+                {
+                    strCallback = "call_exit";
+                }
+                else if (cmd == "")
+                {
+                    strCallback = "call_list";
+                }
+                else
+                {
+                    strCallback = PluginCall.prefixed_callback(plugins[i]["command"]);
+                }
+
+                strCallback = PluginCall.prefixed_callback(plugins[i]["command"]);
                 group.AddCommandItem2(plugins[i]["name"], (i + 1), plugins[i]["hint"], plugins[i]["tooltip"],
-                    0, PluginCall.prefixed_callback(plugins[i]["command"]), "enable_plugin", 1000 + i, itemType);  
+                     0, strCallback, "enable_plugin", 1000 + i, itemType);
             }
             return true;
+        }
+
+        public bool reset_plugin_commands()
+        {
+            remove_commands();
+            try
+            {
+                populate_plugin_commands(mCommandGroup, plugin_info);
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(e.Message);
+            }
+            return false;
         }
 
 
@@ -324,9 +387,18 @@ namespace PluginClient
             return true;
         }
 
-        private void UITeardown()
+        private void remove_commands()
         {
             int removed = mCommandManager.RemoveCommandGroup2(mCommandGroupId, true);
+            if (removed == (int)swRemoveCommandGroupErrors.swRemoveCommandGroup_Failed)
+            {
+                System.Windows.Forms.MessageBox.Show("Could not remove the command group");
+            }
+        }
+
+        private void UITeardown()
+        {
+            remove_commands();
         }
 
         [ComRegisterFunction()]
