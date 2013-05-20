@@ -2,7 +2,7 @@
 <ConfigurationFile>
   <Config host_ip="localhost" host_port="3333" proc_path="C:\CAD_Setup\Addin\proc.bat" />
   <Config command="Sleepy" name="Sleep" tooltip="Sleep for a quick pause"  hint="Sleep for a quick pause" />
-  <Config command="Fake" name="Fake2" tooltip="Sleep for a quick pause"  hint="Sleep for a quick pause" />
+  <Config command="Fake" name="Fake" tooltip="Sleep for a quick pause"  hint="Sleep for a quick pause" />
   <Config command="" name="Utility Selector" tooltip="Open the launcher to select a utility"  hint="Select a utilty to run" />
   <Config command="exit" name="Restart Launcher" tooltip="Restart launcher"  hint="Restart the add-in" />
 </ConfigurationFile>

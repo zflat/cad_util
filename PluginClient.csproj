@@ -66,6 +66,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigInfo.cs" />
+    <Compile Include="PluginCall.cs" />
     <Compile Include="SwIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
