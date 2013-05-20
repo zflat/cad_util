@@ -369,31 +369,33 @@ namespace PluginClient
 
         public bool reset_plugin_commands()
         {
-            remove_commands();
-            try
+            if (remove_commands() && false)
             {
-                populate_plugin_commands(mCommandGroup, plugin_info);
+                try
+                {
+                    populate_plugin_commands(mCommandGroup, plugin_info);
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.Message);
+                }
+                return true;
             }
-            catch (Exception e)
+            else
             {
-                System.Windows.Forms.MessageBox.Show(e.Message);
+                return false;
             }
-            return false;
         }
-
 
         public bool enable_plugin()
         {
             return true;
         }
 
-        private void remove_commands()
+        private bool remove_commands()
         {
             int removed = mCommandManager.RemoveCommandGroup2(mCommandGroupId, true);
-            if (removed == (int)swRemoveCommandGroupErrors.swRemoveCommandGroup_Failed)
-            {
-                System.Windows.Forms.MessageBox.Show("Could not remove the command group");
-            }
+            return removed == (int)swRemoveCommandGroupErrors.swRemoveCommandGroup_Success;
         }
 
         private void UITeardown()
