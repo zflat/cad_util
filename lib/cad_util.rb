@@ -26,7 +26,7 @@ module CadUtil
   #######################
   # Create the controller
   require "plugin_job/hosts/gui_host"
-  controller = PluginJob::HostController.new(GuiHost, plugins, log)
+  controller = PluginJob::HostController.new(PluginJob::GuiHost, plugins, log)
 
   ###################
   # Set up the server
