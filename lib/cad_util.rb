@@ -16,25 +16,28 @@ module CadUtil
   # Set up the Log
   require "log4r"
   include Log4r
-  log = Logger.new 'dispatcher'
+
+  @log = Logger.new 'dispatcher'
   if ARGV.include?('stdout')
-    log.outputters = Outputter.stdout
+    @log.outputters = Outputter.stdout
   end
 
-  plugins = PluginJob::Collection.new({'MainCategory' => ['SavePreview']}, CadUtil::Utility)
+  @plugins = PluginJob::Collection.new({'MainCategory' => ['SavePreview']}, CadUtil::Utility)
 
   #######################
   # Create the controller
   require "plugin_job/hosts/gui_host"
-  controller = PluginJob::HostController.new(PluginJob::GuiHost, plugins, log)
+  @controller = PluginJob::HostController.new(PluginJob::GuiHost, @plugins, @log)
 
   ###################
   # Set up the server
-  server_config = {"host_ip" => "localhost", "port" => 3333}
-  server = PluginJob::Dispatcher.new(controller, server_config)
+  @server_config = {"host_ip" => "localhost", "port" => 3333}
+  @server = PluginJob::Dispatcher.new(@controller, @server_config)
 
-  #####################
-  # Run the application
-  server.exec_app
+  def CadUtil.run
+    #####################
+    # Run the application
+    @server.exec_app
+  end
 
 end
