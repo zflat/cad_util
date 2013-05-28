@@ -20,6 +20,10 @@ module CadUtil
           expect(model).to_not be_nil
         end
 
+        after :each do
+          model.close
+        end
+
       end # "given a valid path"
 
       context "given an invalid path" do

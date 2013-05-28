@@ -30,6 +30,12 @@ module CadUtil
       parse_errors_warnings(*WIN32OLE::ARGV[1..2])
     end
 
+    def close
+      c = Connection::App.connection
+      app = c.app
+      app.CloseDoc(self.GetPathName)
+    end
+
     private
 
     def model
