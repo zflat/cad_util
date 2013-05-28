@@ -13,6 +13,10 @@ module CadUtil
         expect(connection.get_current_working).to_not be_nil
       end
 
+      it "has a working directory" do
+        expect(connection.get_current_working).to_not be_nil
+      end
+
       describe "doc type" do
         context "part name" do
           let(:name){"abc.sldprt"}

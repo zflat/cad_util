@@ -4,14 +4,26 @@ require "cad_util/utilities/save_preview"
 module CadUtil
   module Utility
     describe SavePreview do
+      let(:original_path){File.join(SPEC_DATA_ROOT, 'Gasket.SLDPRT')}
+      let(:fpath){File.join(SPEC_TMP_ROOT, 'Gasket.SLDPRT')}
+      let(:part_model){ModelDoc.new.path_open(fpath)}
+
       subject(:util){SavePreview.new}
 
-      it "has an application" do
-        expect(util.app).to_not be_nil
+      before :each do
+        # copy file to temp path
+        FileUtils.cp original_path, fpath
+
+        # open the subject file in SW
+        part_model
       end
 
-      it "has a working directory" do
-        expect(util.get_current_working).to_not be_nil
+      after :each do
+        # close the temp file
+        part_model.close
+
+        # cleanup the files in the temp path
+        FileUtils.rm [fpath]
       end
 
       it "is valid" do

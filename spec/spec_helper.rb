@@ -1,4 +1,5 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'fileutils'
 require 'rspec'
 require 'cad_util'
 
@@ -7,6 +8,7 @@ require 'cad_util'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 SPEC_DATA_ROOT = File.join(File.dirname(__FILE__), 'data')
+SPEC_TMP_ROOT = File.join(File.dirname(__FILE__), 'tmp')
 
 RSpec.configure do |config|
 
