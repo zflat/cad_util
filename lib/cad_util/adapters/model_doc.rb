@@ -2,6 +2,10 @@ module CadUtil
 
   class ModelDoc < BasicDecorator::Decorator
 
+    def self.path_open(fpath)
+
+    end
+
     def save
       e = AsRefArg::new_obj
       w = AsRefArg::new_obj

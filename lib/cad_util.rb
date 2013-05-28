@@ -7,6 +7,9 @@ require "cad_util/adapters/model_doc"
 require "cad_util/connection"
 require "plugin_job"
 
+require "log4r"
+include Log4r
+
 module CadUtil
 
   # Config utilities
@@ -14,15 +17,16 @@ module CadUtil
 
   ################
   # Set up the Log
-  require "log4r"
-  include Log4r
 
   @log = Logger.new 'dispatcher'
   if ARGV.include?('stdout')
     @log.outputters = Outputter.stdout
   end
 
-  @plugins = PluginJob::Collection.new({'MainCategory' => ['SavePreview']}, CadUtil::Utility)
+  @plugins = PluginJob::Collection.new({
+                                         'MainCategory' =>
+                                         ['SavePreview', 'CopyFname']},
+                                       CadUtil::Utility)
 
   #######################
   # Create the controller

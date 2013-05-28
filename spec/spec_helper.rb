@@ -6,6 +6,8 @@ require 'cad_util'
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
+SPEC_DATA_ROOT = File.join(File.dirname(__FILE__), 'data')
+
 RSpec.configure do |config|
 
   # Testing CLI

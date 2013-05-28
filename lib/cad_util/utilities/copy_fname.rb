@@ -1,23 +1,23 @@
 require 'clipboard'
+require 'plugin_job'
 
 module CadUtil
   module Utility
-    class CopyFname
-      include Connection
+    class CopyFname < PluginJob::Worker
+      include Connection::App
 
       attr_reader :model
-
-      def initialize(model = nil)
-        @model ||= active_model
-      end
 
       def valid?
         !model.nil?
       end
 
       def run
+        @model ||= active_model
         if valid?
-          Clipboard.copy model.GetPathName
+          name = model.GetPathName
+          Clipboard.copy name
+          log.info name
         end
       end
 
