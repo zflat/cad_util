@@ -11,8 +11,11 @@ module CadUtil
         !model.nil?
       end
 
-      def run
+      def setup
         @model ||= active_model
+      end
+
+      def run
         set_preview
         model.save
       end
