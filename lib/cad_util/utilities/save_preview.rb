@@ -16,6 +16,7 @@ module CadUtil
       end
 
       def run
+        @model ||= active_model
         set_preview
         model.save
       end

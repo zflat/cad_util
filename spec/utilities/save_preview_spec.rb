@@ -7,7 +7,7 @@ module CadUtil
       let(:original_path){File.join(SPEC_DATA_ROOT, 'Gasket.SLDPRT')}
       let(:fpath){File.join(SPEC_TMP_ROOT, 'Gasket.SLDPRT')}
       let(:host){SpecHost.new}
-      let(:part_model){ModelDoc.new.path_open(fpath)}
+      let(:part_model){ModelDoc.path_open(fpath)}
 
       subject(:util){SavePreview.new(host)}
 

@@ -2,11 +2,7 @@ module CadUtil
 
   class ModelDoc < BasicDecorator::Decorator
 
-    def initialize(obj=nil)
-      super obj
-    end
-
-    def path_open(fpath, config="")
+    def self.path_open(fpath, config="")
       c = Connection::App.connection
       app = c.app
       setdir_worked = c.set_current_working(File.dirname(fpath))
@@ -15,25 +11,23 @@ module CadUtil
       e = AsRefArg::new_obj
       w = AsRefArg::new_obj
 
-      @component = app.OpenDoc6(fpath,
+      doc = app.OpenDoc6(fpath,
                    type,
-                   open_options,
+                   ModelDoc.open_options,
                    config,
                    e, w)
-      self
+      return ModelDoc.new doc
     end
 
     def save
       e = AsRefArg::new_obj
       w = AsRefArg::new_obj
-      model.save3(save_optns, e, w)
+      model.save3(ModelDoc.save_optns, e, w)
       parse_errors_warnings(*WIN32OLE::ARGV[1..2])
     end
 
     def close
-      c = Connection::App.connection
-      app = c.app
-      app.CloseDoc(self.GetPathName)
+      Connection::App.connection.app.CloseDoc(self.GetPathName)
     end
 
     private
@@ -42,12 +36,12 @@ module CadUtil
       @component
     end
 
-    def save_optns
+    def self.save_optns
       SldConst::SwSaveAsOptions_Silent |
         SldConst::SwSaveAsOptions_AvoidRebuildOnSave
     end
 
-    def open_options
+    def self.open_options
       SldConst::SwOpenDocOptions_Silent
     end
 

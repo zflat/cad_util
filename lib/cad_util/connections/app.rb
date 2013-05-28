@@ -30,7 +30,7 @@ module CadUtil
       end
 
       def app
-        @app ||= WIN32OLE.new('SldWorks.Application')
+        @app ||= WIN32OLE.connect('SldWorks.Application')
       end # app
 
       def active_model
