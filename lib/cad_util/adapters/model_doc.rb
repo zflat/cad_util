@@ -2,8 +2,9 @@ module CadUtil
 
   class ModelDoc < BasicDecorator::Decorator
 
-    def self.path_open(fpath)
-
+    def self.path_open(fpath, config="")
+      setdir_worked = Connection::App.connection.set_current_working(File.dirname(fpath))
+      
     end
 
     def save

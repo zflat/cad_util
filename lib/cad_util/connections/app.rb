@@ -4,6 +4,31 @@ module CadUtil
 
     module App
 
+      class Conxn
+        include App
+      end
+
+      def self.connection
+        @con ||= Conxn.new
+      end
+
+      def self.doc_type(fname)
+        case File.extname(fname)[1..-1].downcase
+        when 'sldasm'
+          SldConst::SwDocASSEMBLY
+        when 'sldprt'
+          SldConst::SwDocPART
+        when 'slddrw'
+          SldConst::SwDocDRAWING
+        else
+          SldConst::SwDocNONE
+        end
+      end
+
+      def doc_type(fname)
+        App.doc_type(fname)
+      end
+
       def app
         @app ||= WIN32OLE.new('SldWorks.Application')
       end # app
@@ -17,7 +42,7 @@ module CadUtil
       end
 
       def set_current_working(dirpath)
-        app.SetCurrentWorkingDirectory(dirpath)
+        blnret = app.SetCurrentWorkingDirectory(dirpath)
       end
 
     end # module App
