@@ -27,6 +27,19 @@ module CadUtil
       parse_errors_warnings(*WIN32OLE::ARGV[1..2])
     end
 
+    def save_as(fpath)
+      options =
+        SldConst::SwSaveAsOptions_Silent|SldConst::SwSaveAsOptions_Copy
+      e = AsRefArg::new_obj
+      w = AsRefArg::new_obj
+      saved = model.SaveAs4(fpath,
+                             SldConst::SwSaveAsCurrentVersion,
+                            options,
+                             e, w)
+      parse_errors_warnings(*WIN32OLE::ARGV[1..2])
+      return saved
+    end
+
     def close
       context.app.CloseDoc(self.GetPathName)
     end
