@@ -26,7 +26,9 @@ module CadUtil
 
   @plugins = PluginJob::Collection.new({
                                          'MainCategory' =>
-                                         ['SavePreview', 'CopyFname']},
+                                         ['SavePreview',
+                                           'SaveCopy',
+                                           'CopyFname']},
                                        CadUtil::Utility)
 
   #######################
