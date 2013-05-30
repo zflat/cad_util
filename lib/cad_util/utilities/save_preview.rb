@@ -1,22 +1,12 @@
-require 'plugin_job'
-
 module CadUtil
   module Utility
-    class SavePreview < PluginJob::Worker
-      include Connection::App
-
-      attr_reader :model
+    class SavePreview < CadWorker
 
       def valid?
         !model.nil?
       end
 
-      def setup
-        @model ||= active_model
-      end
-
-      def run
-        @model ||= active_model
+      def run_utility
         set_preview
         model.save
       end
@@ -26,6 +16,12 @@ module CadUtil
       end
 
       private
+
+      def model
+        if context && context.app
+          @model ||= context.app.active_model
+        end
+      end
 
       def set_preview
         show_isometric

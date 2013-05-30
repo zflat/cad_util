@@ -1,7 +1,11 @@
 module CadUtil
 
   module Connection
-    module Pdm
+    class Pdm
+      def initialize(context)
+        @context = context
+      end
+      private
       def pdm
         if @pdm.nil?
           @pdm = WIN32OLE.new('PDMWorks.PDMWConnection')
