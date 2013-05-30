@@ -3,13 +3,14 @@ module CadUtil
   module Connection
 
     class App
+      attr_reader :context
 
       def initialize(context)
         @context = context
       end
 
       def active_model
-        ModelDoc.new app.ActiveDoc
+        ModelDoc.new app.ActiveDoc, context
       end
 
       def get_current_working

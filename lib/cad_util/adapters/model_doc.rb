@@ -1,12 +1,13 @@
+require "cad_util/context_decorator"
+
 module CadUtil
 
-  class ModelDoc < BasicDecorator::Decorator
+  class ModelDoc < ContextDecorator
 
-    def self.path_open(fpath, config="")
-      c = Connection::App.connection
-      app = c.app
-      setdir_worked = c.set_current_working(File.dirname(fpath))
-      type = c.doc_type(fpath)
+    def self.path_open(fpath, config="", context)
+      app = context.app
+      setdir_worked = app.set_current_working(File.dirname(fpath))
+      type = SldConst.doc_type(fpath)
 
       e = AsRefArg::new_obj
       w = AsRefArg::new_obj
@@ -16,7 +17,7 @@ module CadUtil
                    ModelDoc.open_options,
                    config,
                    e, w)
-      return ModelDoc.new doc
+      return ModelDoc.new doc, context
     end
 
     def save
@@ -27,7 +28,7 @@ module CadUtil
     end
 
     def close
-      Connection::App.connection.app.CloseDoc(self.GetPathName)
+      context.app.CloseDoc(self.GetPathName)
     end
 
     private
@@ -47,11 +48,11 @@ module CadUtil
 
     def parse_open_err_warns(e, w)
       if w != 0
-        puts "Warning opening document"
+        warn w, "Warning opening document"
       end
 
       if e != 0
-        puts "Error opening document"
+        err e, "Error opening document"
       end
     end
 
@@ -156,13 +157,13 @@ module CadUtil
 
     def warn(val, const, msg)
       if (val & const) != 0
-        puts msg
+        context.log.warn msg
       end
     end
 
     def err(val, const, msg)
       if (val & const) != 0
-        puts msg
+        context.log.error msg
       end
     end
 
