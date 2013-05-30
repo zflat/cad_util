@@ -31,6 +31,14 @@ module CadUtil
       context.app.CloseDoc(self.GetPathName)
     end
 
+    def show_isometric
+      model.ShowNamedView2 "*Isometric", -1
+    end
+
+    def zoom_fit
+      model.ViewZoomtofit2
+    end
+
     private
 
     def model
@@ -58,7 +66,7 @@ module CadUtil
 
     def parse_errors_warnings(e, w)
       if w !=0
-        puts "Warning saving document"
+        warn w, w, "Warning saving document"
 
         warn w,
         SldConst::SwFileSaveWarning_RebuildError,
@@ -106,7 +114,7 @@ module CadUtil
 
       end # if w !=0
       if e != 0
-        puts "Error saving document"
+        err e, e, "Error saving document"
 
         err e,
         SldConst::SwReadOnlySaveError,

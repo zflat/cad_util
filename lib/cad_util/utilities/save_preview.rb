@@ -24,17 +24,10 @@ module CadUtil
       end
 
       def set_preview
-        show_isometric
-        zoom_fit
+        model.show_isometric
+        model.zoom_fit
       end
 
-      def show_isometric
-        model.ShowNamedView2 "*Isometric", -1
-      end
-
-      def zoom_fit
-        model.ViewZoomtofit2
-      end
     end # class SaveCopy
   end # module Utility
 
