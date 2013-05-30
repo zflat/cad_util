@@ -1,6 +1,10 @@
+require 'cad_util/connections/context_active_model'
+
 module CadUtil
   module Utility
     class SavePreview < CadWorker
+
+      include Connection::ContextActiveModel
 
       def valid?
         !model.nil?
@@ -16,12 +20,6 @@ module CadUtil
       end
 
       private
-
-      def model
-        if context && context.app
-          @model ||= context.app.active_model
-        end
-      end
 
       def set_preview
         model.show_isometric

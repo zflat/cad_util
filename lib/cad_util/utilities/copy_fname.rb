@@ -1,8 +1,11 @@
 require 'clipboard'
+require 'cad_util/connections/context_active_model'
 
 module CadUtil
   module Utility
     class CopyFname < CadWorker
+
+      include Connection::ContextActiveModel
 
       def valid?
         !model.nil?
@@ -13,12 +16,6 @@ module CadUtil
           name = model.GetPathName
           Clipboard.copy name
           log.info name
-        end
-      end
-
-      def model
-        if context && context.app
-          @model ||= context.app.active_model
         end
       end
 
