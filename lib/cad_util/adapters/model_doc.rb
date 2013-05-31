@@ -59,10 +59,14 @@ module CadUtil
         mat_vals[i] = color[i]
       end
 
-      vals_arr = WIN32OLE_VARIANT.array([mat_vals.count], WIN32OLE::VARIANT::VT_R8)
+      # Wrap the array as a variant to be compliant
+      vals_arr = WIN32OLE_VARIANT.array([mat_vals.count],
+                                        WIN32OLE::VARIANT::VT_R8)
       (0..mat_vals.count-1).to_a.each do |i|
         vals_arr[i] = mat_vals[i]
       end
+
+      model.extension.RemoveMaterialProperty(SldConst::SwThisConfiguration,nil)
       model.MaterialPropertyValues = vals_arr
     end
 
