@@ -1,4 +1,6 @@
 require "spec_helper"
+require "win32ole"
+
 
 module CadUtil
 
@@ -64,8 +66,19 @@ module CadUtil
 
       describe "setting with unchanged properties" do
         it "keeps the same properties" do
-          model.MaterialPropertyValues= vals_0
+          arr = WIN32OLE_VARIANT.array([vals_0.count], WIN32OLE::VARIANT::VT_R8)
+          (0..vals_0.count-1).to_a.each do |i|
+            arr[i] = vals_0[i]
+          end
+          model.MaterialPropertyValues= arr
           expect(model.MaterialPropertyValues).to eq vals_0
+        end
+      end
+
+      context "with no color specified" do
+        it "assigns a random color" do
+          model.change_color
+          expect(model.MaterialPropertyValues).to_not eq vals_0
         end
       end
 

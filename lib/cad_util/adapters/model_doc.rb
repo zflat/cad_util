@@ -55,13 +55,15 @@ module CadUtil
     def change_color(color=nil)
       color ||= random_color
       mat_vals = model.MaterialPropertyValues
+      (0..2).to_a.each do |i|
+        mat_vals[i] = color[i]
+      end
 
-      model.MaterialPropertyValues =
-        [0.1, 0.2, 0.5,
-        1.0, 1.0, 1.0,
-        0.31, 0.0, 0.0]
-      puts model.MaterialPropertyValues
-
+      vals_arr = WIN32OLE_VARIANT.array([mat_vals.count], WIN32OLE::VARIANT::VT_R8)
+      (0..mat_vals.count-1).to_a.each do |i|
+        vals_arr[i] = mat_vals[i]
+      end
+      model.MaterialPropertyValues = vals_arr
     end
 
     private
