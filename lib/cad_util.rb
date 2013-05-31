@@ -28,6 +28,7 @@ module CadUtil
                                          'MainCategory' =>
                                          ['SavePreview',
                                            'SaveCopy',
+                                           'RandomColorChange',
                                            'CopyFname']},
                                        CadUtil::Utility)
 

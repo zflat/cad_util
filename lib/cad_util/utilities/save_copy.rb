@@ -29,6 +29,7 @@ module CadUtil
 
         # Change the color of the new file
         new_file.change_color
+        new_file.ForceRebuild3(true)
 
         # Save the new file
         new_file.save
