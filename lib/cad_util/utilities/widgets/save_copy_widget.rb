@@ -3,7 +3,7 @@ require "Qt"
 module CadUtil
   module Utility
     class SaveCopyWidget < Qt::Widget
-      attr_reader :fpath
+      attr_reader :fpath, :btn_box
 
       def initialize(parent=nil)
         super(parent)
@@ -12,13 +12,15 @@ module CadUtil
 
         @fpath = Qt::LineEdit.new(self)
         @fpath_btn = Qt::PushButton.new("Browse...")
+        @fpath_btn.connect(SIGNAL(:clicked)){
+          fpath_prompt
+        }
+
         @fpath_layout = Qt::HBoxLayout.new
         @fpath_layout.addWidget(@fpath)
         @fpath_layout.addWidget(@fpath_btn)
 
-        @btn_next =  Qt::PushButton.new("Next")
-        @btn_box = Qt::DialogButtonBox.new
-        @btn_box.addButton(@btn_next, Qt::DialogButtonBox::ActionRole)
+        @btn_box = Qt::DialogButtonBox.new(Qt::DialogButtonBox::Save)
 
         @fpath_label = Qt::Label.new("File Name:")
         @fpath_label.setBuddy(@fpath)
@@ -31,6 +33,12 @@ module CadUtil
 
       end
 
+      def fpath_prompt(*dialog_args)
+        fpath_txt = Qt::FileDialog.getSaveFileName(*dialog_args)
+        unless fpath_txt.nil?
+          @fpath.setText fpath_txt
+        end
+      end
 
     end # class SaveCopyWidget
   end # module Utility

@@ -2,10 +2,11 @@ module CadUtil
 
   module Connection
 
-    class App
+    class App < BasicDecorator::Decorator
       attr_reader :context
 
       def initialize(context)
+        super(app)
         @context = context
       end
 

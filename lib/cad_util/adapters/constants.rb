@@ -7,6 +7,7 @@ module CadUtil
     end
 
     def SldConst.doc_type(fname)
+      return nil if fname.nil?
       case File.extname(fname)[1..-1].downcase
       when 'sldasm'
         SldConst::SwDocASSEMBLY

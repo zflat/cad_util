@@ -52,7 +52,25 @@ module CadUtil
       model.ViewZoomtofit2
     end
 
+    def change_color(color=nil)
+      color ||= random_color
+      mat_vals = model.MaterialPropertyValues
+
+      model.MaterialPropertyValues =
+        [0.1, 0.2, 0.5,
+        1.0, 1.0, 1.0,
+        0.31, 0.0, 0.0]
+      puts model.MaterialPropertyValues
+
+    end
+
     private
+
+    def random_color
+      srand
+      prng = Random.new
+      3.times.map{prng.rand(0.85)+0.1}
+    end
 
     def model
       @component

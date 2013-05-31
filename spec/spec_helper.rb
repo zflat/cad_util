@@ -12,15 +12,6 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 SPEC_DATA_ROOT = File.join(File.dirname(__FILE__), 'data')
 SPEC_TMP_ROOT = File.join(File.dirname(__FILE__), 'tmp')
 
-class SpecHost
-  include PluginJob::LogBuilder
-  include Log4r
-  def initialize
-    @log = Logger.new 'host'
-  end
-end
-
-h = SpecHost.new
 
 RSpec.configure do |config|
 
