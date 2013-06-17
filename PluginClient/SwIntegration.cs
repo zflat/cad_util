@@ -89,6 +89,7 @@ namespace PluginClient
         private bool add_commands()
         {
             int err = 0;
+
             String mCommandGroupName = "Utilities";
             int nth_group = mCommandGroupId - mCommandGroupId_0;
             
