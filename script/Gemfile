@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+
+# gem "plugin_job" , :git => "git://github.com/zflat/plugin_job.git"
+gem "plugin_job" #, :path => "H:\\sandbox\\plugin_job"
+
