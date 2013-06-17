@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = CadUtil::VERSION
   spec.authors       = ["William Wedler"]
   spec.email         = ["wwedler@aquion-energy.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{CAD Automation Scripts}
+  spec.summary       = %q{Library of plugin scripts for performing CAD automation tasks}
   spec.homepage      = ""
   spec.license       = "MIT"
 
