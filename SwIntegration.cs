@@ -82,12 +82,14 @@ namespace PluginClient
             }
 
             bool commands_added = add_commands();
+            System.Net.Sockets.Socket s = PluginCall.run_host();
+            s.Close();
         }
 
         private bool add_commands()
         {
             int err = 0;
-            String mCommandGroupName = "Automation";
+            String mCommandGroupName = "Utilities";
             int nth_group = mCommandGroupId - mCommandGroupId_0;
             
             if (null != mCommandGroup)
@@ -126,8 +128,13 @@ namespace PluginClient
 
         private bool remove_commands()
         {
-            int removed = mCommandManager.RemoveCommandGroup2(mCommandGroupId, true);
-            return removed == (int)swRemoveCommandGroupErrors.swRemoveCommandGroup_Success;
+            bool retval = true;
+            for (int i = 0; i < 3; i++)
+            {
+                int removed = mCommandManager.RemoveCommandGroup2(mCommandGroupId, true);
+                retval = retval || (removed == (int)swRemoveCommandGroupErrors.swRemoveCommandGroup_Success);
+            }
+            return retval;
         }
 
         private bool populate_plugin_commands(CommandGroup group, List<Dictionary<String, String>> plugins)
@@ -164,9 +171,9 @@ namespace PluginClient
 
         public bool reset_plugin_commands()
         {
+            return false;
+
             bool removed = remove_commands();
-            removed = remove_commands();
-            removed = remove_commands(); // third time is a charm
 
             if (removed)
             {
@@ -194,8 +201,6 @@ namespace PluginClient
 
         private void UITeardown()
         {
-            remove_commands();
-            remove_commands();
             remove_commands();
         }
 

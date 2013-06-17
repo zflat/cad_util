@@ -104,7 +104,18 @@ namespace PluginClient
 
         public static Socket run_host()
         {
-            Socket s = null;
+            /**
+             * Consider sending SW to back of z-index
+             * http://stackoverflow.com/questions/9334963/show-a-form-behind-everything-else-and-without-stealing-focus
+             * http://msdn.microsoft.com/en-us/library/ms633545(VS.85).aspx
+             * http://stackoverflow.com/questions/6724644/process-start-how-to-send-the-launched-executable-to-the-back-c
+             */
+            Socket s = try_connect();
+
+            if(s != null){
+                return s;
+            }
+
             using (System.Diagnostics.Process p = new System.Diagnostics.Process())
             {
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);

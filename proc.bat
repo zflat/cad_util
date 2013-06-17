@@ -1,1 +1,1 @@
-start "Dispatcher" ruby H:\sandbox\plugin_job\spec\script\plugin_proc.rb stdout
+start "Dispatcher" ruby H:\sandbox\cad_util\script\run.rb stdout
