@@ -3,9 +3,9 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 $0 = "cad_plugins"
 
-gemfile_path = File.join(File.dirname(__FILE__), '..', 'Gemfile')
+gemfile_path = File.join(File.dirname(__FILE__), 'Gemfile')
 # Dir.chdir File.dirname(gemfile_path)
-# ENV['BUNDLE_GEMFILE'] = gemfile_path
+ENV['BUNDLE_GEMFILE'] = gemfile_path
 
 # Load the bundled environment
 require 'rubygems'
