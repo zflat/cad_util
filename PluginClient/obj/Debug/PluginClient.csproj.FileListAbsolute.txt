@@ -5,3 +5,10 @@ H:\sandbox\Automation\PluginClient\bin\Debug\solidworkstools.dll
 H:\sandbox\Automation\PluginClient\obj\Debug\PluginClient.dll
 H:\sandbox\Automation\PluginClient\obj\Debug\PluginClient.pdb
 H:\sandbox\Automation\PluginClient\bin\Debug\PluginClient.tlb
+H:\sandbox\cad_util\PluginClient\obj\Debug\PluginClient.csprojResolveAssemblyReference.cache
+H:\sandbox\cad_util\PluginClient\obj\Debug\PluginClient.dll
+H:\sandbox\cad_util\PluginClient\obj\Debug\PluginClient.pdb
+H:\sandbox\cad_util\PluginClient\bin\Debug\PluginClient.dll
+H:\sandbox\cad_util\PluginClient\bin\Debug\PluginClient.pdb
+H:\sandbox\cad_util\PluginClient\bin\Debug\PluginClient.tlb
+H:\sandbox\cad_util\PluginClient\bin\Debug\solidworkstools.dll

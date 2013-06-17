@@ -68,7 +68,7 @@ namespace PluginClient
         /// </summary>
         private void UISetup()
         {
-            config_info = new ConfigInfo(@"C:\CAD_Setup\Addin\config.xml");
+            config_info = new ConfigInfo(@"C:\CADetc\Addin\config.xml");
             plugin_info = config_info.list();
 
             try
