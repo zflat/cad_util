@@ -8,11 +8,9 @@ module CadUtil
       include Connection::ContextActiveModel
 
       def run_utility
-        if valid?
-          name = model.GetPathName
-          Clipboard.copy name
-          log.info name
-        end
+        name = model.GetPathName
+        Clipboard.copy name
+        log.info name
       end
 
       private
