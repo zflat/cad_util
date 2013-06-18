@@ -7,10 +7,6 @@ module CadUtil
 
       include Connection::ContextActiveModel
 
-      def valid?
-        !model.nil?
-      end
-
       def run_utility
         @widget.fpath.setText fname_0
         @waiting_for_input = true
@@ -48,6 +44,10 @@ module CadUtil
       end
 
       private
+
+      def validate
+        !model.nil?
+      end
 
       def process
         # Get the new file name

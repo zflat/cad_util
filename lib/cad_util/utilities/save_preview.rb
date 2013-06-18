@@ -6,10 +6,6 @@ module CadUtil
 
       include Connection::ContextActiveModel
 
-      def valid?
-        !model.nil?
-      end
-
       def run_utility
         set_preview
         model.save
@@ -24,6 +20,10 @@ module CadUtil
       def set_preview
         model.show_isometric
         model.zoom_fit
+      end
+
+      def validate
+        !model.nil?
       end
 
     end # class SaveCopy

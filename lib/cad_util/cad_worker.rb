@@ -8,12 +8,24 @@ module CadUtil
 
     attr_reader :context
 
-    # NOTE: the context is created in the run
-    # step because connections made in other steps (like setup)
-    # are in a different thread and do not translate over
     def run
-      @context = JobContext.new(self)
       run_utility
     end
+
+    # NOTE: the context is created in the run step when valid
+    # is checked because connections made in other steps (like setup)
+    # are in a different thread and do not translate over
+    def valid?
+      @context = JobContext.new(self)
+      return validate
+    end
+
+    private
+
+    # Override to provide preconditions checking
+    def validate
+      true
+    end
+
   end
 end

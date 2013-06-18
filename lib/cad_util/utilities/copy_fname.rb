@@ -7,16 +7,18 @@ module CadUtil
 
       include Connection::ContextActiveModel
 
-      def valid?
-        !model.nil?
-      end
-
       def run_utility
         if valid?
           name = model.GetPathName
           Clipboard.copy name
           log.info name
         end
+      end
+
+      private
+
+      def validate
+        !model.nil?
       end
 
     end # class SaveCopy
