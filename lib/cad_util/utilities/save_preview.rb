@@ -18,7 +18,9 @@ module CadUtil
       private
 
       def set_preview
-        model.show_isometric
+        unless model.doc_type == SldConst::SwDocDRAWING
+          model.show_isometric
+        end
         model.zoom_fit
       end
 

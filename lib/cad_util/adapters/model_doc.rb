@@ -70,6 +70,10 @@ module CadUtil
       model.MaterialPropertyValues = vals_arr
     end
 
+    def doc_type
+      SldConst.doc_type(model.GetPathName)
+    end
+
     private
 
     def random_color
