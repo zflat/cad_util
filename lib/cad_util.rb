@@ -24,7 +24,7 @@ module CadUtil
     @log.outputters = Outputter.stdout
   end
 
-  @plugins = PluginJob::Collection.new({
+  @plugins = PluginJob::PluginCollection.new({
                                          'MainCategory' =>
                                          ['SavePreview',
                                            'SaveCopy',
