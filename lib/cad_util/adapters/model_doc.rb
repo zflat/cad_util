@@ -40,6 +40,10 @@ module CadUtil
       return saved
     end
 
+    def save_as_silent(fpath, as_copy)
+      model.SaveAsSilent(fpath, as_copy)
+    end
+
     def close
       context.app.CloseDoc(self.GetPathName)
     end

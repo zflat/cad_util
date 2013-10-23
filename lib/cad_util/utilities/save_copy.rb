@@ -27,9 +27,17 @@ module CadUtil
         new_file.change_color
         new_file.ForceRebuild3(true)
 
-        # Save the new file
-        new_file.save
+        # Save the new file with SaveAsSilent to force color change
+        # new_file.save
+        # See https://forum.solidworks.com/thread/52728
+        new_file.save_as_silent(@fname_1, false)
 
+        # Force color to change by closing then opening
+        log.info("Closing then reopening file to force color change")
+        new_file.close
+        new_file = ModelDoc.path_open(@fname_1, context)
+        new_file.ForceRebuild3(true)
+        new_file.save
       end
 
       def widget
