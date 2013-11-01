@@ -45,7 +45,9 @@ module CadUtil
         if @widget.nil?
           @widget = SaveCopyWidget.new
           @widget.btn_box.connect(SIGNAL("accepted()")){
-            process
+            if process
+              @widget.setEnabled(false)
+            end
           }
         end
         @widget
@@ -64,10 +66,12 @@ module CadUtil
         # Check for conflicting name
         if FileTest.exists? name
           log.warn("File #{name} already exists")
+          false
         else
           # Assign the file name
           @fname_1 = name
           @waiting_for_input = false
+          true
         end
       end
 

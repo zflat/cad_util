@@ -13,7 +13,7 @@ module CadUtil
         @fpath = Qt::LineEdit.new(self)
         @fpath_btn = Qt::PushButton.new("Browse...")
         @fpath_btn.connect(SIGNAL(:clicked)){
-          fpath_prompt
+          fpath_prompt(self, "File Name", @fpath.text, "SldWorks File")
         }
 
         @fpath_layout = Qt::HBoxLayout.new
@@ -36,7 +36,10 @@ module CadUtil
       def fpath_prompt(*dialog_args)
         fpath_txt = Qt::FileDialog.getSaveFileName(*dialog_args)
         unless fpath_txt.nil?
+          # set the text path
           @fpath.setText fpath_txt
+          # emit accepted signal
+          @btn_box.accepted
         end
       end
 
