@@ -5,15 +5,17 @@ module CadUtil
 
       include Connection::ContextActiveModel
 
-      def valid?
-        !model.nil?
-      end
-
       def run_utility
         model.change_color
         model.ForceRebuild3(true)
         log.info "Color Changed"
       end # run_utility
+
+      private
+
+      def validate
+        !model.nil?
+      end
 
     end # class RandomColorChange
   end # module Utility
