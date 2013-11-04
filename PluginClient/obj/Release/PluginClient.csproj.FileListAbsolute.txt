@@ -1,0 +1,5 @@
+C:\CADetc\Addin\client\PluginClient.dll
+C:\CADetc\Addin\client\PluginClient.pdb
+H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.dll
+H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.pdb
+H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csprojResolveAssemblyReference.cache

@@ -78,7 +78,7 @@ namespace PluginClient
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(e.Message);
+                System.Windows.Forms.MessageBox.Show(e.Message+"\n"+e.StackTrace);
             }
 
             bool commands_added = add_commands();
@@ -184,7 +184,7 @@ namespace PluginClient
                 }
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show(e.Message);
+                    System.Windows.Forms.MessageBox.Show(e.Message+"\n"+e.StackTrace);
                 }
                 return true;
             }

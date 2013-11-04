@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Diagnostics;
 
 using System.Runtime.InteropServices;
 using System.Reflection.Emit;
@@ -39,7 +40,8 @@ namespace PluginClient
 
         private static String host_ip = "localhost";
         private static int host_port = 3333;
-        private static String host_proc_path = @"C:\CAD_Setup\Addin\proc.bat"; // @"h:\sandbox\plugin_job\spec\script\plugin_proc.rb";
+        private static String host_proc_path = "SPECIFIED IN CONFIG FILE";
+        private static String host_proc_name = "SPECIFIED IN CONFIG FILE";
 
         public PluginCall(ConfigInfo config_data, SwIntegration caller)
         {
@@ -52,6 +54,7 @@ namespace PluginClient
             host_port = Convert.ToInt32(config["host_port"]);
             host_ip = config["host_ip"];
             host_proc_path = config["proc_path"];
+            host_proc_name = config["proc_name"];
         }
 
 
@@ -88,7 +91,7 @@ namespace PluginClient
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(e.GetType() + " " + e.Message);
+                System.Windows.Forms.MessageBox.Show(e.GetType() + " " + e.Message+"\n"+e.StackTrace);
             }
         }
 
@@ -97,9 +100,28 @@ namespace PluginClient
             Socket s = try_connect();
             if (null == s)
             {
+                host_win_handle();
                 s = run_host();
             }
             return s;
+        }
+
+        /**
+         * Get the window handle of the running host if
+         * it can be found
+         */
+        public static IntPtr host_win_handle()
+        {
+            Process[] Processes = Process.GetProcessesByName(host_proc_name);
+            IntPtr hWnd = IntPtr.Zero;
+            Debug.Write("Processes: " + Processes.Length);
+            foreach (Process p in Processes)
+            {
+                // do something
+                System.Windows.Forms.MessageBox.Show(p.ProcessName);
+                hWnd = p.Handle;
+            }
+            return hWnd;
         }
 
         public static Socket run_host()
@@ -119,7 +141,7 @@ namespace PluginClient
             using (System.Diagnostics.Process p = new System.Diagnostics.Process())
             {
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
-                info.Arguments = "";
+                info.Arguments = "0"; //1 for hidden, 0 for shown
                 info.RedirectStandardInput = true;
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;

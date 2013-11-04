@@ -54,6 +54,7 @@ namespace PluginClient
                         host_info_dict.Add("host_ip", host_attrib.Value);
                         host_info_dict.Add("host_port", plugin_config.Attribute("host_port").Value);
                         host_info_dict.Add("proc_path", plugin_config.Attribute("proc_path").Value);
+                        host_info_dict.Add("proc_name", plugin_config.Attribute("proc_name").Value);
                     }
 
                 }
