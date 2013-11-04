@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-$0 = "cad_plugins"
+# name the ruby program
+$0 = "util_launcher"
 
 gemfile_path = File.join(File.dirname(__FILE__), 'Gemfile')
 # Dir.chdir File.dirname(gemfile_path)
