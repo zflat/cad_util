@@ -13,6 +13,7 @@ using System.Linq.Expressions;
 using System.Dynamic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace PluginClient
 {
@@ -73,26 +74,28 @@ namespace PluginClient
         }
 
         public static void call_plugin_callback(String command_function)
-        {
-            String command = command_from_callback_fname(command_function);
-
-            try
+        {            
+            ThreadPool.QueueUserWorkItem((x) =>
             {
-                Socket s = get_connection();
-
-                ASCIIEncoding encoder = new ASCIIEncoding();
-                byte[] buffer = encoder.GetBytes(command + "\n");
-                int n_sent = s.Send(buffer);
-                if (n_sent != buffer.Length)
+                String command = command_from_callback_fname(command_function);
+                try
                 {
-                    System.Windows.Forms.MessageBox.Show("Command not sent");
+                    Socket s = get_connection();
+
+                    ASCIIEncoding encoder = new ASCIIEncoding();
+                    byte[] buffer = encoder.GetBytes(command + "\n");
+                    int n_sent = s.Send(buffer);
+                    if (n_sent != buffer.Length)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Command not sent");
+                    }
+                    s.Disconnect(true);
                 }
-                s.Disconnect(true);
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.GetType() + " " + e.Message+"\n"+e.StackTrace);
-            }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.GetType() + " " + e.Message+"\n"+e.StackTrace);
+                }
+            });
         }
 
         public static Socket get_connection()
@@ -137,24 +140,100 @@ namespace PluginClient
             if(s != null){
                 return s;
             }
-
-            using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+            
+            bool done = false;
+            ThreadPool.QueueUserWorkItem((x) =>
             {
+                using (var splashForm = new Splash())
+                {
+                    splashForm.Show();
+                    while (!done)
+                    {
+                        System.Threading.Thread.Sleep(10);
+                    }
+                    splashForm.Close();
+                }
+            });
+
+            //check if the process is already running
+            if (!is_host_proc_running(host_proc_name))
+            {
+                using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+                {
+                // process not running, so start it up
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
-                info.Arguments = "0"; //1 for hidden, 0 for shown
+                info.Arguments = "1"; //1 for hidden, 0 for shown
                 info.RedirectStandardInput = true;
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
                 info.CreateNoWindow = true;
                 p.StartInfo = info;
                 p.Start();
-                while (s == null)
-                {
-                    s = try_connect();
-                    System.Threading.Thread.Sleep(10);
                 }
             }
+                
+            while (s == null)
+            {
+                s = try_connect();
+                System.Threading.Thread.Sleep(10);
+            }
+            done = true;
+
             return s;
+        }
+
+
+
+        /*
+         * http://stackoverflow.com/questions/1742787/check-if-a-specific-exe-file-is-running
+         * 
+         */
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOWMINIMIZED = 2;
+        private const int SW_SHOWMAXIMIZED = 3;
+        private const int SW_SHOWNOACTIVATE = 4;
+        private const int SW_RESTORE = 9;
+        private const int SW_SHOWDEFAULT = 10;
+
+        private static bool is_host_proc_running(String proc_name)
+        {
+            // get all processes by Current Process name
+            /*
+            Process[] processes =
+                Process.GetProcessesByName(
+                    Process.GetCurrentProcess().ProcessName);
+            */
+
+            // get all processes by the given name
+            Process[] processes = Process.GetProcessesByName(proc_name);
+
+            // if there is more than one process...
+            if (processes.Length > 1)
+            {
+                // if other process id is OUR process ID...
+                // then the other process is at index 1
+                // otherwise other process is at index 0
+                int n = (processes[0].Id == Process.GetCurrentProcess().Id) ? 1 : 0;
+
+                // get the window handle
+                IntPtr hWnd = processes[n].MainWindowHandle;
+
+                // if iconic, we need to restore the window
+                if (IsIconic(hWnd)) ShowWindowAsync(hWnd, SW_RESTORE);
+
+                // Bring it to the foreground
+                SetForegroundWindow(hWnd);
+                return true;
+            }
+            return false;
         }
 
 

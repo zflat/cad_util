@@ -14,6 +14,7 @@ using SolidWorksTools;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 
 namespace PluginClient
 {   
@@ -82,8 +83,12 @@ namespace PluginClient
             }
 
             bool commands_added = add_commands();
-            System.Net.Sockets.Socket s = PluginCall.run_host();
-            s.Close();
+
+            ThreadPool.QueueUserWorkItem((x) =>
+            {
+                System.Net.Sockets.Socket s = PluginCall.run_host();
+                s.Close();
+            });
         }
 
         private bool add_commands()
