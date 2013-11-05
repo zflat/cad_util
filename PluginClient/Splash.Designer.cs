@@ -35,8 +35,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImage = global::PluginClient.Properties.Resources.teeth;
-            this.ClientSize = new System.Drawing.Size(600, 408);
+            this.BackgroundImage = global::PluginClient.Properties.Resources.loading;
+            this.ClientSize = new System.Drawing.Size(396, 58);
             this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Splash";

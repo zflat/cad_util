@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ConfigurationFile>
-  <Config host_ip="localhost" host_port="3333" proc_path="C:\CADetc\Addin\proc.bat" proc_name="util_launcher.exe" />
+  <Config host_ip="localhost" host_port="3333" proc_path="C:\CADetc\Addin\proc.bat" proc_name="util_launcher" />
   <Config command="SavePreview" name="Save for Preview" tooltip="Save iso and zoomed to fit"  hint="Save iso and zoomed to fit" />
   <Config command="SaveCopy" name="Save as Copy" tooltip="Save as copy and open new file"  hint="Save as copy and open new file" />
   <Config command="CopyFname" name="Copy File Name" tooltip="Copy file name to clipboard"  hint="Copy file name to clipboard" />

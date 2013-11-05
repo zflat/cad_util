@@ -82,6 +82,14 @@ namespace PluginClient
                 {
                     Socket s = get_connection();
 
+                    // Bring the launcher to the foreground
+                    IntPtr hWnd = host_win_handle();
+                    
+                    // if iconic, we need to restore the window
+                    if (IsIconic(hWnd)) ShowWindowAsync(hWnd, SW_RESTORE);
+                    // Bring it to the foreground
+                    SetForegroundWindow(hWnd);
+
                     ASCIIEncoding encoder = new ASCIIEncoding();
                     byte[] buffer = encoder.GetBytes(command + "\n");
                     int n_sent = s.Send(buffer);
@@ -103,29 +111,11 @@ namespace PluginClient
             Socket s = try_connect();
             if (null == s)
             {
-                host_win_handle();
                 s = run_host();
             }
             return s;
         }
 
-        /**
-         * Get the window handle of the running host if
-         * it can be found
-         */
-        public static IntPtr host_win_handle()
-        {
-            Process[] Processes = Process.GetProcessesByName(host_proc_name);
-            IntPtr hWnd = IntPtr.Zero;
-            Debug.Write("Processes: " + Processes.Length);
-            foreach (Process p in Processes)
-            {
-                // do something
-                System.Windows.Forms.MessageBox.Show(p.ProcessName);
-                hWnd = p.Handle;
-            }
-            return hWnd;
-        }
 
         public static Socket run_host()
         {
@@ -146,12 +136,16 @@ namespace PluginClient
             {
                 using (var splashForm = new Splash())
                 {
+                    //splashForm.ShowInTaskbar = false;
                     splashForm.Show();
-                    while (!done)
+                    ThreadPool.QueueUserWorkItem((y) =>
                     {
-                        System.Threading.Thread.Sleep(10);
-                    }
-                    splashForm.Close();
+                        while (!done)
+                        {
+                            System.Threading.Thread.Sleep(10);
+                        }
+                        splashForm.Close();
+                    });
                 }
             });
 
@@ -160,15 +154,15 @@ namespace PluginClient
             {
                 using (System.Diagnostics.Process p = new System.Diagnostics.Process())
                 {
-                // process not running, so start it up
-                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
-                info.Arguments = "1"; //1 for hidden, 0 for shown
-                info.RedirectStandardInput = true;
-                info.RedirectStandardOutput = true;
-                info.UseShellExecute = false;
-                info.CreateNoWindow = true;
-                p.StartInfo = info;
-                p.Start();
+                    // process not running, so start it up
+                    System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
+                    info.Arguments = "1"; //1 for hidden, 0 for shown
+                    info.RedirectStandardInput = true;
+                    info.RedirectStandardOutput = true;
+                    info.UseShellExecute = false;
+                    info.CreateNoWindow = true;
+                    p.StartInfo = info;
+                    p.Start();
                 }
             }
                 
@@ -205,35 +199,39 @@ namespace PluginClient
 
         private static bool is_host_proc_running(String proc_name)
         {
-            // get all processes by Current Process name
-            /*
-            Process[] processes =
-                Process.GetProcessesByName(
-                    Process.GetCurrentProcess().ProcessName);
-            */
-
             // get all processes by the given name
-            Process[] processes = Process.GetProcessesByName(proc_name);
+            Process[] processes = Process.GetProcessesByName(proc_name);            
 
-            // if there is more than one process...
-            if (processes.Length > 1)
+            // processes found
+            return (processes.Length > 0);
+        }
+
+
+        /**
+         * Get the window handle of the running host if
+         * it can be found
+         */
+        public static IntPtr host_win_handle()
+        {
+            Process[] Processes = Process.GetProcessesByName(host_proc_name);
+            IntPtr hWnd = IntPtr.Zero;
+            Debug.Write("Processes: " + Processes.Length);
+
+            foreach (Process p in Processes)
             {
-                // if other process id is OUR process ID...
-                // then the other process is at index 1
-                // otherwise other process is at index 0
-                int n = (processes[0].Id == Process.GetCurrentProcess().Id) ? 1 : 0;
-
-                // get the window handle
-                IntPtr hWnd = processes[n].MainWindowHandle;
-
-                // if iconic, we need to restore the window
-                if (IsIconic(hWnd)) ShowWindowAsync(hWnd, SW_RESTORE);
-
-                // Bring it to the foreground
-                SetForegroundWindow(hWnd);
-                return true;
+                hWnd = host_win_handle(p);
             }
-            return false;
+            return hWnd;
+        }
+
+        /**
+         * Get the window handle of the running host if
+         * it can be found
+         */
+        public static IntPtr host_win_handle(Process p)
+        {
+            return p.Handle;
+            //return p.MainWindowHandle;
         }
 
 
