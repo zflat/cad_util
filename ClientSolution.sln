@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginClient", "PluginClient\PluginClient.csproj", "{2F4EE191-818D-40D9-872C-92B290A39EA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilLauncherService", "UtilLauncherService\UtilLauncherService.csproj", "{02A2AEAE-03C4-4CD9-8BCC-48C237885990}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{2F4EE191-818D-40D9-872C-92B290A39EA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F4EE191-818D-40D9-872C-92B290A39EA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F4EE191-818D-40D9-872C-92B290A39EA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02A2AEAE-03C4-4CD9-8BCC-48C237885990}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02A2AEAE-03C4-4CD9-8BCC-48C237885990}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02A2AEAE-03C4-4CD9-8BCC-48C237885990}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02A2AEAE-03C4-4CD9-8BCC-48C237885990}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

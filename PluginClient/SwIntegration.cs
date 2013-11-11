@@ -20,6 +20,9 @@ namespace PluginClient
 {   
     public class SwIntegration : ISwAddin
     {
+        public static String config_path = @"C:\CADetc\Addin\config.xml";
+
+
         public SldWorks mSWApplication;
         private int mSWCookie;
 
@@ -69,7 +72,7 @@ namespace PluginClient
         /// </summary>
         private void UISetup()
         {
-            config_info = new ConfigInfo(@"C:\CADetc\Addin\config.xml");
+            config_info = new ConfigInfo(config_path);
             plugin_info = config_info.list();
 
             try
@@ -86,7 +89,7 @@ namespace PluginClient
 
             ThreadPool.QueueUserWorkItem((x) =>
             {
-                System.Net.Sockets.Socket s = PluginCall.run_host();
+                System.Net.Sockets.Socket s = PluginCall.run_host(config_info.host_info()["proc_name"], config_info.host_info()["proc_path"]);
                 s.Close();
             });
         }

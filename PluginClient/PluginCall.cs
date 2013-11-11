@@ -44,6 +44,20 @@ namespace PluginClient
         private static String host_proc_path = "SPECIFIED IN CONFIG FILE";
         private static String host_proc_name = "SPECIFIED IN CONFIG FILE";
 
+        public PluginCall(ConfigInfo config_data)
+        {
+            integration = null;
+
+            plugins = config_data.list();
+            callback_container = build_container();
+            config = config_data.host_info();
+
+            host_port = Convert.ToInt32(config["host_port"]);
+            host_ip = config["host_ip"];
+            host_proc_path = config["proc_path"];
+            host_proc_name = config["proc_name"];
+        }
+
         public PluginCall(ConfigInfo config_data, SwIntegration caller)
         {
             integration = caller;
@@ -116,8 +130,12 @@ namespace PluginClient
             return s;
         }
 
-
         public static Socket run_host()
+        {
+            return run_host(host_proc_name, host_proc_path);
+        }
+
+        public static Socket run_host(String str_proc_name, String str_proc_path)
         {
             /**
              * Consider sending SW to back of z-index
@@ -130,6 +148,8 @@ namespace PluginClient
             if(s != null){
                 return s;
             }
+
+            start_host_proc(str_proc_name, str_proc_path);
             
             bool done = false;
             ThreadPool.QueueUserWorkItem((x) =>
@@ -149,22 +169,6 @@ namespace PluginClient
                 }
             });
 
-            //check if the process is already running
-            if (!is_host_proc_running(host_proc_name))
-            {
-                using (System.Diagnostics.Process p = new System.Diagnostics.Process())
-                {
-                    // process not running, so start it up
-                    System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo(host_proc_path);
-                    info.Arguments = "1"; //1 for hidden, 0 for shown
-                    info.RedirectStandardInput = true;
-                    info.RedirectStandardOutput = true;
-                    info.UseShellExecute = false;
-                    info.CreateNoWindow = true;
-                    p.StartInfo = info;
-                    p.Start();
-                }
-            }
                 
             while (s == null)
             {
@@ -176,7 +180,37 @@ namespace PluginClient
             return s;
         }
 
+        public static System.Diagnostics.Process start_host_proc()
+        {
+            return start_host_proc(host_proc_name, host_proc_path);
+        }
 
+        public static System.Diagnostics.Process start_host_proc(String str_proc_name, String str_proc_path)
+        {
+            System.Diagnostics.Process p = null;
+            //check if the process is already running
+            if (!is_host_proc_running(str_proc_name))
+            {
+                String display_state_arg = "0";  //1 for hidden, 0 for shown
+
+                // process not running, so start it up
+                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    FileName = "cmd.exe",
+                    Arguments = string.Format("/K \"{0} {1}\"", host_proc_path, display_state_arg),
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = false,
+                };
+
+                p = new System.Diagnostics.Process();
+                p.StartInfo = info;
+                p.Start();
+            }
+            return p;
+        }
 
         /*
          * http://stackoverflow.com/questions/1742787/check-if-a-specific-exe-file-is-running
@@ -197,7 +231,7 @@ namespace PluginClient
         private const int SW_RESTORE = 9;
         private const int SW_SHOWDEFAULT = 10;
 
-        private static bool is_host_proc_running(String proc_name)
+        public static bool is_host_proc_running(String proc_name)
         {
             // get all processes by the given name
             Process[] processes = Process.GetProcessesByName(proc_name);            
