@@ -12,3 +12,8 @@ C:\CADetc\Addin\client\UtilLauncherService.exe
 C:\CADetc\Addin\client\UtilLauncherService.pdb
 H:\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.UtilService.resources
 H:\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.csproj.GenerateResource.Cache
+C:\Users\wwedler\Documents\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.csprojResolveAssemblyReference.cache
+C:\Users\wwedler\Documents\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.UtilService.resources
+C:\Users\wwedler\Documents\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.csproj.GenerateResource.Cache
+C:\Users\wwedler\Documents\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.exe
+C:\Users\wwedler\Documents\sandbox\cad_util\UtilLauncherService\obj\Release\UtilLauncherService.pdb

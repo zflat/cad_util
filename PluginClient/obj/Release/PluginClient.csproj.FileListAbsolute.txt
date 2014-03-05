@@ -6,3 +6,9 @@ H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csprojResolveAssemblyR
 H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.Properties.Resources.resources
 H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.Splash.resources
 H:\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csproj.GenerateResource.Cache
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csprojResolveAssemblyReference.cache
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.Properties.Resources.resources
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.Splash.resources
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csproj.GenerateResource.Cache
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.dll
+C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.pdb

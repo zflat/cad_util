@@ -2,6 +2,6 @@ source 'https://rubygems.org'
 
 
 # gem "plugin_job" , :git => "git://github.com/zflat/plugin_job.git"
-gem "plugin_job" #, :path => "H:\\sandbox\\plugin_job"
-gem "cad_util", :path =>  "H:\\sandbox\\cad_util"
+gem "plugin_job" #, :path => "C:\\Users\\wwedler\\Documents\\sandbox\\plugin_job"
+gem "cad_util", :path =>  "C:\\Users\\wwedler\\Documents\\sandbox\\cad_util"
 

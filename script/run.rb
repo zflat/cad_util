@@ -14,7 +14,11 @@ ENV['SCRIPT_ENTRY'] = File.dirname(__FILE__)
 # Load the bundled environment
 require 'rubygems'
 
-puts Benchmark.measure{ 
+# Load the splash screen
+require 'qt'
+
+
+puts Benchmark.measure{
   require 'bundler'
   Bundler.setup(:default)
   puts "Bundler setup"
