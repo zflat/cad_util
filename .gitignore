@@ -20,3 +20,4 @@ spec/tmp
 test/version_tmp
 tmp
 *.suo
+build/*
