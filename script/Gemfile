@@ -1,5 +1,0 @@
-source 'https://rubygems.org'
-
-gem "plugin_job" , :git => "git://github.com/zflat/plugin_job.git"
-gem "cad_util", :path =>  "C:\\Users\\wwedler\\Documents\\sandbox\\cad_util"
-
