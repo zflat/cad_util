@@ -1,20 +1,10 @@
 # CadUtil
 
-TODO: Write a gem description
+TODO: Write a description
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'cad_util'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install cad_util
+TODO: Write usage instalation instructions here
 
 ## Usage
 

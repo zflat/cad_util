@@ -12,3 +12,5 @@ C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClien
 C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.csproj.GenerateResource.Cache
 C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.dll
 C:\Users\wwedler\Documents\sandbox\cad_util\PluginClient\obj\Release\PluginClient.pdb
+C:\Users\wwedler\Documents\sandbox\cad_util\build\Addin\client\PluginClient.dll
+C:\Users\wwedler\Documents\sandbox\cad_util\build\Addin\client\PluginClient.pdb

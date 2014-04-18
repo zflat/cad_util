@@ -20,7 +20,8 @@ namespace PluginClient
 {   
     public class SwIntegration : ISwAddin
     {
-        public static String config_path = @"C:\CADetc\Addin\config.xml";
+        public static string assemblyFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        public static String config_path = Path.Combine(assemblyFolder, "config.xml");
 
 
         public SldWorks mSWApplication;
