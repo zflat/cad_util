@@ -24,13 +24,21 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QThread>
 #include "util_save_preview_worker.h"
 
-#include "sld_app_context.h"
+#include "sldcontext.h"
+#include "sld_model.h"
+
+void UtilSavePreviewWorker::init(){
+    //Handling CoInitialize (and CoUninitialize!)
+    // http://stackoverflow.com/questions/2979113/qcroreapplication-qapplication-with-wmi
+    HRESULT hres =  CoInitializeEx(0, COINIT_MULTITHREADED);
+    qDebug() << "SavePreview initialized";
+}
 
 void UtilSavePreviewWorker::start(){
-  qDebug() << "Run in plugin UtilSleepyWorker <---" ;
+  qDebug() << "Run in plugin UtilSavePreviewWorker <---" ;
 
-  SldAppContext * app = new SldAppContext;
-  ISldWorksPtr swAppPtr = app->getApp();
+  SldContext * context = new SldContext();
+  ISldWorksPtr swAppPtr = context->get_swApp();
 
   if(swAppPtr){
       IModelDoc2Ptr swModel;
@@ -46,34 +54,24 @@ void UtilSavePreviewWorker::start(){
           hres = swModel->ShowNamedView2(viewName, -1);
           hres = swModel->ViewZoomtofit2();
 
-          long save_err=0;
-          long save_warn=0;
-          long save_optns = swSaveAsOptions_e::swSaveAsOptions_Silent\
-                  | swSaveAsOptions_e::swSaveAsOptions_AvoidRebuildOnSave;
-          VARIANT_BOOL bres = false;
-          swModel->Save3(save_optns, &save_err, &save_warn, &bres);
-
-
-          BSTR pathName;
-          (hres) = swModel->GetPathName(&pathName);
-          if (FAILED(hres)){
-              qWarning() << " Could not get the document path name";
-          }else{
-              QString qstr((QChar*)pathName, ::SysStringLen(pathName));
-              qDebug() << qstr.toStdString().c_str();
-          }
+          IModelDoc2* swModelPtr = (IModelDoc2*)swModel;
+          SldModel model(context, static_cast<IModelDoc2**>(&swModelPtr));
+          model.save();
       }
   }
 
-  delete app;
+  delete context;
 
-    for(int i=0; i<25; i++){
+    for(int i=0; i<25&&false; i++){
         QThread::msleep(500);
         qDebug()<<i<<endl;
         if(is_terminate_requested){
             return;
         }
     }
-    qDebug() << "Done Sleepy";
+
+    CoUninitialize();
+
+    qDebug() << "Done UtilSavePreview";
     emit complete();
 }

@@ -33,6 +33,7 @@ class UtilSavePreviewWorker : public UtilWorker
     Q_OBJECT
 public:
     void start();
+    void init();
 };
 
 #endif // UTIL_SLEEPY_WORKER_H
