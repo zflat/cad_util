@@ -22,6 +22,9 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDebug>
 #include <QThread>
+#include <QClipboard>
+#include <QApplication>
+
 #include "util_copy_file_name_worker.h"
 
 #include "sldcontext.h"
@@ -49,8 +52,16 @@ void UtilCopyFileNameWorker::start(){
           BSTR fileName;
           hres = swModel->GetPathName(&fileName);
           
-          QString qstr((QChar*)fileName, ::SysStringLen(fileName));
-          qDebug() << qstr.toStdString().c_str();
+          if(FAILED(hres)){
+              qWarning() << "Could not get the path name of the active document.";
+          }else{
+              QString qstr((QChar*)fileName, ::SysStringLen(fileName));
+              qDebug() << qstr.toStdString().c_str();
+              QClipboard *clipboard = QApplication::clipboard();
+              clipboard->setText(qstr);
+          }
+      }else{
+          qWarning() << "No active document";
       }
   }
 
