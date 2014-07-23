@@ -22,6 +22,7 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QDebug>
 #include <QThread>
+#include <QLabel>
 #include <QClipboard>
 #include <QApplication>
 
@@ -30,10 +31,13 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include "sldcontext.h"
 #include "sld_model.h"
 
+UtilCopyFileNameWorker::UtilCopyFileNameWorker(int argc, char *argv[], QObject* parent) : UtilWorker(argc, argv, parent){
+    widget = new QLabel("Path: ");
+    meta_hash.insert("widget_type", "simple");
+}
+
 void UtilCopyFileNameWorker::init(){
-    //Handling CoInitialize (and CoUninitialize!)
-    // http://stackoverflow.com/questions/2979113/qcroreapplication-qapplication-with-wmi
-    HRESULT hres =  CoInitializeEx(0, COINIT_MULTITHREADED);
+    UtilWorker::init();
     qDebug() << "Utility initialized";
 }
 
@@ -57,6 +61,7 @@ void UtilCopyFileNameWorker::start(){
           }else{
               QString qstr((QChar*)fileName, ::SysStringLen(fileName));
               qDebug() << qstr.toStdString().c_str();
+              ((QLabel*)widget)->setText(qstr);
               QClipboard *clipboard = QApplication::clipboard();
               clipboard->setText(qstr);
           }
@@ -66,6 +71,9 @@ void UtilCopyFileNameWorker::start(){
   }
 
   delete context;
-  CoUninitialize();
   emit complete();
+}
+
+void UtilCopyFileNameWorker::cleanup(){
+    UtilWorker::cleanup();
 }

@@ -32,8 +32,14 @@ class UtilCopyFileNameWorker : public UtilWorker
 {
     Q_OBJECT
 public:
+    UtilCopyFileNameWorker(int argc=0, char *argv[]=NULL, QObject* parent=0);
     void start();
     void init();
+    void cleanup();
+
+    QObject* get_widget(){return (QObject*)widget;}
+protected:
+    QWidget* widget;
 };
 
 #endif // UTIL_COPY_FILE_NAME_WORKER_H

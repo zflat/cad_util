@@ -28,9 +28,7 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include "sld_model.h"
 
 void UtilSavePreviewWorker::init(){
-    //Handling CoInitialize (and CoUninitialize!)
-    // http://stackoverflow.com/questions/2979113/qcroreapplication-qapplication-with-wmi
-    HRESULT hres =  CoInitializeEx(0, COINIT_MULTITHREADED);
+    UtilWorker::init();
     qDebug() << "SavePreview initialized";
 }
 
@@ -69,8 +67,6 @@ void UtilSavePreviewWorker::start(){
             return;
         }
     }
-
-    CoUninitialize();
 
     qDebug() << "Done UtilSavePreview";
     emit complete();

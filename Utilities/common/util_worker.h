@@ -37,6 +37,9 @@ http://stackoverflow.com/questions/9070817/qobject-factory-in-qt-pluginnon-creat
 #include <QObject>
 #include <QHash>
 #include <QString>
+#include <QDebug>
+
+#include "windows.h"
 
 class UtilWorker : public QObject
 {
@@ -45,9 +48,19 @@ class UtilWorker : public QObject
     UtilWorker(int argc=0, char *argv[]=NULL, QObject* parent=0) : QObject( parent ), meta_hash(), \
         is_terminate_requested(false){}
     virtual ~UtilWorker(){}
-    virtual void init(){}
+    virtual void init(){
+        //Handling CoInitialize (and CoUninitialize!)
+        // http://stackoverflow.com/questions/2979113/qcroreapplication-qapplication-with-wmi
+        HRESULT hres =  CoInitializeEx(0, COINIT_MULTITHREADED);
+        if(FAILED(hres)){
+            qWarning() << "Could not initialze OLE";
+        }
+    }
     virtual bool is_valid(){return true;}
     virtual void start(){emit complete(0);}
+    virtual void cleanup(){
+        CoUninitialize();
+    }
     virtual QString meta_lookup(const QString &key){
         return (meta_hash.contains(key)) ? meta_hash.value(key, QString()) : QString();
     }
