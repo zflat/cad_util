@@ -23,7 +23,6 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDebug>
 #include <QThread>
 #include <QLabel>
-#include <QClipboard>
 #include <QApplication>
 
 #include "util_copy_file_name_worker.h"
@@ -32,13 +31,23 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include "sld_model.h"
 
 UtilCopyFileNameWorker::UtilCopyFileNameWorker(int argc, char *argv[], QObject* parent) : UtilWorker(argc, argv, parent){
-    widget = new QLabel("Path: ");
+    //widget = new QLabel("Path: ");
+    widget = new NameReporterWidget();
     meta_hash.insert("widget_type", "simple");
+}
+
+UtilCopyFileNameWorker::~UtilCopyFileNameWorker(){
+    delete widget;
 }
 
 void UtilCopyFileNameWorker::init(){
     UtilWorker::init();
+    QObject::connect(this, SIGNAL(fname_retrieved(const QString &)), widget, SLOT(report_action(const QString &)));
     qDebug() << "Utility initialized";
+}
+
+QObject* UtilCopyFileNameWorker::get_widget(){
+    {return (QObject*)widget;}
 }
 
 void UtilCopyFileNameWorker::start(){
@@ -60,10 +69,7 @@ void UtilCopyFileNameWorker::start(){
               qWarning() << "Could not get the path name of the active document.";
           }else{
               QString qstr((QChar*)fileName, ::SysStringLen(fileName));
-              qDebug() << qstr.toStdString().c_str();
-              ((QLabel*)widget)->setText(qstr);
-              QClipboard *clipboard = QApplication::clipboard();
-              clipboard->setText(qstr);
+              Q_EMIT fname_retrieved(qstr);
           }
       }else{
           qWarning() << "No active document";

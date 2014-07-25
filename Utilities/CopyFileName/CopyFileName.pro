@@ -18,22 +18,26 @@
 
 TEMPLATE    = lib
 CONFIG      += plugin
-QT          += core gui testlib
+QT          += core gui widgets
 
 TARGET      = $$qtLibraryTarget(utilCopyFileName)
-# DESTDIR     = $$PWD/../../integration/build/debug/plugins
 DESTDIR     = $$PWD/../../build\host\plugins
 
 
 SOURCES += \
     $$PWD/src/util_copy_file_name.cpp \
     $$PWD/src/util_copy_file_name_worker.cpp \
+    $$PWD/src/name_reporter_widget.cpp
 
 HEADERS += \
     $$PWD/include/util_copy_file_name.h \
-    $$PWD/include/util_copy_file_name_worker.h
+    $$PWD/include/util_copy_file_name_worker.h \
+    $$PWD/include/name_reporter_widget.h
 
 INCLUDEPATH += $$PWD/src \
     $$PWD/"include" \
 
 include($$PWD/../common/common.pri)
+
+FORMS += \
+    $$PWD/src/name_reporter_widget.ui

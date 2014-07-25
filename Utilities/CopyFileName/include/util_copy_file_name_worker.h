@@ -27,19 +27,26 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QRunnable>
 #include <QObject>
 #include "util_worker.h"
+#include "name_reporter_widget.h"
 
 class UtilCopyFileNameWorker : public UtilWorker
 {
     Q_OBJECT
 public:
     UtilCopyFileNameWorker(int argc=0, char *argv[]=NULL, QObject* parent=0);
+    ~UtilCopyFileNameWorker();
+
     void start();
     void init();
     void cleanup();
 
-    QObject* get_widget(){return (QObject*)widget;}
+    QObject* get_widget();
+
+signals:
+    void fname_retrieved(const QString & name);
+
 protected:
-    QWidget* widget;
+    NameReporterWidget* widget;
 };
 
 #endif // UTIL_COPY_FILE_NAME_WORKER_H
