@@ -8,6 +8,7 @@
 #include <QObject>
 #include "util_worker.h"
 #include "save_copy_widget.h"
+#include "sld_model.h"
 
 #define UTIL_NEW_WORKER new WorkerSafeSaveAsCopy()
 class WorkerSafeSaveAsCopy : public UtilWorker
@@ -20,6 +21,14 @@ public:
     QObject* get_widget(){return (QObject*)widget;}
 protected:
     SaveCopyWidget* widget;
+
+private slots:
+    void process_save();
+
+private:
+    QString fpath_0();
+    SldModel* model;
+    bool waiting_for_input;
 };
 
 

@@ -17,7 +17,15 @@ public:
     ~SaveCopyWidget();
 
     QString fpath();
+    void set_fpath_str(const QString & fpath);
 
+    void ui_enable(bool is_enabled);
+
+signals:
+    void save_accepted();
+
+private slots:
+    void on_fpath_btn_clicked();
 
 private:
     Ui::SaveCopyWidget *ui;
