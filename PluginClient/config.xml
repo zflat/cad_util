@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ConfigurationFile>
-  <Config host_ip="localhost" host_port="3333" proc_path="C:\CADetc\Addin\proc.bat" proc_name="util_launcher" />
+  <Config host_ip="localhost" host_port="3344" proc_path="" proc_name="" proc_args="-p 3344" />
+  <Config command="Print" name="Print example" tooltip="Example first plugin"  hint="Example first plugin" />
   <Config command="SavePreview" name="Save for Preview" tooltip="Save iso and zoomed to fit"  hint="Save iso and zoomed to fit" />
   <Config command="SaveCopy" name="Save as Copy" tooltip="Save as copy and open new file"  hint="Save as copy and open new file" />
-  <Config command="CopyFname" name="Copy File Name" tooltip="Copy file name to clipboard"  hint="Copy file name to clipboard" />
+  <Config command="CopyFileName" name="Copy File Name" tooltip="Copy file name to clipboard"  hint="Copy file name to clipboard" />
+  <Config command="RandomColorChange" name="Random Color Change" tooltip="Change to rancom color"  hint="Change to random color" />
   <Config command="" name="Utility Selector" tooltip="Open the launcher to select a utility"  hint="Select a utilty to run" />
   <Config command="exit" name="Restart Launcher" tooltip="Restart launcher"  hint="Restart the add-in" />
 </ConfigurationFile>

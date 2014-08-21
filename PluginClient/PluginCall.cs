@@ -14,6 +14,7 @@ using System.Dynamic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.IO;
 
 namespace PluginClient
 {
@@ -40,36 +41,61 @@ namespace PluginClient
         public object callback_container;
 
         private static String host_ip = "localhost";
-        private static int host_port = 3333;
+        private static int host_port = 0000;
         private static String host_proc_path = "SPECIFIED IN CONFIG FILE";
         private static String host_proc_name = "SPECIFIED IN CONFIG FILE";
+        private static String host_proc_args = "SPECIFIED IN CONFIG FILE";
 
         public PluginCall(ConfigInfo config_data)
         {
             integration = null;
-
-            plugins = config_data.list();
-            callback_container = build_container();
-            config = config_data.host_info();
-
-            host_port = Convert.ToInt32(config["host_port"]);
-            host_ip = config["host_ip"];
-            host_proc_path = config["proc_path"];
-            host_proc_name = config["proc_name"];
+            populate_config_vals(config_data);
         }
 
         public PluginCall(ConfigInfo config_data, SwIntegration caller)
         {
             integration = caller;
+            populate_config_vals(config_data);
+        }
 
+        private void populate_config_vals(ConfigInfo config_data)
+        {
             plugins = config_data.list();
             callback_container = build_container();
             config = config_data.host_info();
 
+            String working_dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
             host_port = Convert.ToInt32(config["host_port"]);
             host_ip = config["host_ip"];
-            host_proc_path = config["proc_path"];
+            String host_proc_relative_dir = Path.GetFullPath(Path.Combine(working_dir, "..\\..\\host"));
             host_proc_name = config["proc_name"];
+
+            if (String.IsNullOrEmpty(host_proc_name))
+            {
+                // Find the exe in the host proc dir
+                try
+                {
+                    var files = Directory.EnumerateFiles(host_proc_relative_dir, "*.exe", System.IO.SearchOption.TopDirectoryOnly);
+                    foreach (String file in files)
+                    {
+                        host_proc_name = Path.GetFileNameWithoutExtension(file);
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.Message);
+                }
+            }
+
+            host_proc_path = config["proc_path"];
+            if (String.IsNullOrEmpty(host_proc_path))
+            {
+                // path as relative location from the dir
+                host_proc_path = Path.GetFullPath(Path.Combine(host_proc_relative_dir, host_proc_name + ".exe"));
+            }
+
+            host_proc_args = config["proc_args"];
         }
 
 
@@ -96,14 +122,6 @@ namespace PluginClient
                 {
                     Socket s = get_connection();
 
-                    // Bring the launcher to the foreground
-                    IntPtr hWnd = host_win_handle();
-                    
-                    // if iconic, we need to restore the window
-                    if (IsIconic(hWnd)) ShowWindowAsync(hWnd, SW_RESTORE);
-                    // Bring it to the foreground
-                    SetForegroundWindow(hWnd);
-
                     ASCIIEncoding encoder = new ASCIIEncoding();
                     byte[] buffer = encoder.GetBytes(command + "\n");
                     int n_sent = s.Send(buffer);
@@ -112,6 +130,16 @@ namespace PluginClient
                         System.Windows.Forms.MessageBox.Show("Command not sent");
                     }
                     s.Disconnect(true);
+                                        
+                    // Bring the launcher to the foreground (once the window is shown for the process)
+                    System.Threading.Thread.Sleep(100);
+                    IntPtr hWnd = host_win_handle();
+
+                    // if iconic, we need to restore the window
+                    if (IsIconic(hWnd)) ShowWindowAsync(hWnd, SW_RESTORE);
+                    // Bring it to the foreground
+                    SetForegroundWindow(hWnd);
+
                 }
                 catch (Exception e)
                 {
@@ -194,6 +222,8 @@ namespace PluginClient
                 String display_state_arg = "0";  //1 for hidden, 0 for shown
 
                 // process not running, so start it up
+                /*
+                * /// When a .bat file is used to launch the process
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo
                 {
                     CreateNoWindow = true,
@@ -208,6 +238,16 @@ namespace PluginClient
                 p = new System.Diagnostics.Process();
                 p.StartInfo = info;
                 p.Start();
+                 * */
+                try
+                {
+                    p = System.Diagnostics.Process.Start(host_proc_path, host_proc_args);
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.Message);
+                }
+
             }
             return p;
         }
@@ -241,12 +281,23 @@ namespace PluginClient
         }
 
 
+        public static Process get_running_host_proc(String proc_name)
+        {
+            // get all processes by the given name
+            Process[] processes = Process.GetProcessesByName(proc_name);
+
+            // processes found
+            return (processes.Length > 0) ? processes[0] : null;
+        }
+
+
         /**
          * Get the window handle of the running host if
          * it can be found
          */
         public static IntPtr host_win_handle()
         {
+            /*
             Process[] Processes = Process.GetProcessesByName(host_proc_name);
             IntPtr hWnd = IntPtr.Zero;
             Debug.Write("Processes: " + Processes.Length);
@@ -256,6 +307,8 @@ namespace PluginClient
                 hWnd = host_win_handle(p);
             }
             return hWnd;
+             * */
+            return host_win_handle(get_running_host_proc(host_proc_name));
         }
 
         /**
@@ -264,7 +317,7 @@ namespace PluginClient
          */
         public static IntPtr host_win_handle(Process p)
         {
-            return p.Handle;
+            return (p != null) ? p.Handle : System.IntPtr.Zero;
             //return p.MainWindowHandle;
         }
 
