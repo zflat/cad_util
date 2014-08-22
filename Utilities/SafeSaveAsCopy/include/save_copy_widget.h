@@ -18,7 +18,7 @@ public:
 
     QString fpath();
     void set_fpath_str(const QString & fpath);
-
+    void select_fpath_base_name();
     void ui_enable(bool is_enabled);
 
 signals:

@@ -10,6 +10,8 @@ SaveCopyWidget::SaveCopyWidget(QWidget *parent) :
     ui->setupUi(this);    
     QObject::connect(ui->btn_box, SIGNAL(accepted()), this, SIGNAL(save_accepted()));
     connect(ui->txt_fpath, SIGNAL(returnPressed()), this, SIGNAL(save_accepted()));
+
+    this->setFocusProxy(ui->txt_fpath);
 }
 
 SaveCopyWidget::~SaveCopyWidget()
@@ -31,6 +33,11 @@ void SaveCopyWidget::on_fpath_btn_clicked()
 
 void SaveCopyWidget::set_fpath_str(const QString &fpath){
     ui->txt_fpath->setText(fpath);
+}
+
+void SaveCopyWidget::select_fpath_base_name(){
+    QString fbasename = QFileInfo(fpath()).completeBaseName();
+    ui->txt_fpath->setSelection(fpath().indexOf(fbasename), fbasename.length());
 }
 
 void SaveCopyWidget::ui_enable(bool is_enabled){

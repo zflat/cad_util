@@ -19,16 +19,26 @@ public:
     void start();
 
     QObject* get_widget(){return (QObject*)widget;}
+
 protected:
     SaveCopyWidget* widget;
+
+    /**
+     * @brief main_form_process.
+     * Be sure to call from the main thread.
+     */
+    void main_form_process();
+
+    bool is_form_data_valid();
 
 private slots:
     void process_save();
 
-private:
+protected:
     QString fpath_0();
     SldModel* model;
     bool waiting_for_input;
+    SldContext * context;
 };
 
 
