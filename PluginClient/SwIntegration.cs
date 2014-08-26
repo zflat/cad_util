@@ -174,7 +174,7 @@ namespace PluginClient
                 plugin_count_id++;
                 strCallback = PluginCall.prefixed_callback(plugins[i]["command"]);
                 group.AddCommandItem2(plugins[i]["name"], (i + 1), plugins[i]["hint"], plugins[i]["tooltip"],
-                     0, strCallback, "enable_plugin", plugin_count_id, itemType);
+                     0, strCallback, "enable_plugin", Convert.ToInt16(plugins[i]["id"]), itemType);
             }
             return true;
         }

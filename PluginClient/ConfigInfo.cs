@@ -42,6 +42,7 @@ namespace PluginClient
                     {
                         Dictionary<String, String> info = new Dictionary<string, string>();
                         info.Add("command", command_attrib.Value);
+                        info.Add("id", plugin_config.Attribute("id").Value);
                         info.Add("name", plugin_config.Attribute("name").Value);
                         info.Add("tooltip", plugin_config.Attribute("tooltip").Value);
                         info.Add("hint", plugin_config.Attribute("hint").Value);
