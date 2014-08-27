@@ -11,6 +11,7 @@
 
   !include "MUI2.nsh"
   !include "FileFunc.nsh"
+  !include x64.nsh
   
   !include WordFunc.nsh
   !insertmacro VersionCompare
@@ -110,6 +111,24 @@ SectionEnd
 
 Section "Plugin Host" SecCpyHost
 
+    SetOutPath "$TEMP\${TITLE}\Install"
+    File ".\vcredist_x64.exe"
+    
+	; Check for VC++ redistributable
+    ${If} ${RunningX64}
+	  ReadRegStr $1 HKLM \
+	    "SOFTWARE\Microsoft\DevDiv\vc\Servicing\11.0\RuntimeMinimum" "Install"
+	  StrCmp $1 1 installed
+      ;not installed, so run the installer
+      ExecWait '"$TEMP\${TITLE}\Install\vcredist_x64.exe"  /passive /norestart'
+      Delete "$TEMP\${TITLE}\Install\vcredist_x64.exe"	  
+    ${Else}
+	  ReadRegStr $1 HKLM \
+	    "SOFTWARE\Wow6432Node\Microsoft\DevDiv\VC\Servicing\11.0\RuntimeMinimum" "Install"
+	  StrCmp $1 1 installed
+    ${EndIf}
+    installed:
+
   SetOutPath "$INSTDIR"
   
   ;ADDDING FILES
@@ -184,17 +203,14 @@ Section "Uninstall"
 SectionEnd
 
 Function .onInit
-
-; get directory of .NET framework installation
-Push "v4.0"
-Call GetRegAsmDir
-Pop $R0 ; .net framework v4.0 installation directory
-StrCmpS "" $R0 err_dot_net_not_found
-
-return
- 
-err_dot_net_not_found:
-	 MessageBox MB_OKCANCEL $R0
-	Abort "Aborted: v4.0 .Net framework not found."	
+ ; get directory of .NET framework installation
+ Push "v4.0"
+ Call GetRegAsmDir
+ Pop $R0 ; .net framework v4.0 installation directory
+ StrCmpS $R0 "" dot_net_not_found	
+ return
+ dot_net_not_found:
+   MessageBox MB_OKCANCEL $R0
+   Abort "Aborted: v4.0 .Net framework not found."
 FunctionEnd
 
