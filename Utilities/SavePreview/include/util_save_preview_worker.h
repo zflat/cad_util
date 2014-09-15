@@ -32,6 +32,7 @@ class UtilSavePreviewWorker : public UtilWorker
 {
     Q_OBJECT
 public:
+    UtilSavePreviewWorker(int argc=0, char *argv[]=NULL, QObject* parent=0);
     void start();
     void init();
 };

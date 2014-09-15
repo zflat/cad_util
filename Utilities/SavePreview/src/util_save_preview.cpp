@@ -40,4 +40,4 @@ UtilWorker *UtilSavePreview::newWorker(){
     return new UtilSavePreviewWorker();
 }
 
-QString UtilSavePreview::version() const{ return QString("0.1.0"); }
+QString UtilSavePreview::version() const{ return QString("0.2.0"); }

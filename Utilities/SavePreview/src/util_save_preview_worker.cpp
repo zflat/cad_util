@@ -27,6 +27,10 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include "sldcontext.h"
 #include "sld_model.h"
 
+UtilSavePreviewWorker::UtilSavePreviewWorker(int argc, char *argv[], QObject *parent) :  UtilWorker(argc, argv, parent){
+    meta_hash.insert("silent", "true");
+}
+
 void UtilSavePreviewWorker::init(){
     UtilWorker::init();
     qDebug() << "SavePreview initialized";
