@@ -60,6 +60,11 @@ namespace PluginClient
             return true;
         }
 
+        public String working_dir()
+        {
+            return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        }
+
         /// <summary>
         /// 
         /// Command Manager example
@@ -75,6 +80,8 @@ namespace PluginClient
         {
             config_info = new ConfigInfo(config_path);
             plugin_info = config_info.list();
+
+            plugin_icon_img_path = Path.GetFullPath(Path.Combine(working_dir(), "IconSprite.bmp"));
 
             try
             {
@@ -115,25 +122,37 @@ namespace PluginClient
                 mCommandGroup = mCommandManager.CreateCommandGroup2(mCommandGroupId, mCommandGroupName, "Utility scripts for automating tasks.",
                         "Plugins used to automate solidworks tasks", -1, false, ref err);
 
-                if (err != 0 && err != (int)swCreateCommandGroupErrors.swCreateCommandGroup_Success)
-                {
-                    String str_err_message = "Error creating the command group.\n";
-                    if (err == (int)swCreateCommandGroupErrors.swCreateCommandGroup_Failed)
+                 if (err != 0 && err != (int)swCreateCommandGroupErrors.swCreateCommandGroup_Success)
                     {
-                        str_err_message += "Failed.\n";
+                        String str_err_message = "Error creating the command group.\n";
+                        if (err == (int)swCreateCommandGroupErrors.swCreateCommandGroup_Failed)
+                        {
+                            str_err_message += "Failed.\n";
+                        }
+                        if (err == (int)swCreateCommandGroupErrors.swCreateCommandGroup_Exceeds_ToolBarIDs)
+                        {
+                            str_err_message += "Exceeds toolbar ids.\n";
+                        }
                     }
-                    if (err == (int)swCreateCommandGroupErrors.swCreateCommandGroup_Exceeds_ToolBarIDs)
-                    {
-                        str_err_message += "Exceeds toolbar ids.\n";
-                    }
-                }
             }
+            
+            if (mCommandGroup != null) {
+                mCommandGroup.LargeIconList = plugin_icon_img_path;
+                mCommandGroup.SmallIconList = plugin_icon_img_path;
+                mCommandGroup.LargeMainIcon = Path.GetFullPath(Path.Combine(working_dir(), "MainIconLarge.png"));
 
-            plugins_populated = !plugins_populated && populate_plugin_commands(mCommandGroup, plugin_info);
+                plugins_populated = !plugins_populated && populate_plugin_commands(mCommandGroup, plugin_info);
 
-            bool activated =  mCommandGroup.Activate();
-            //System.Windows.Forms.MessageBox.Show("id:" + mCommandGroupId + "group# " + nth_group + "groups count:" + ((int)mCommandManager.NumberOfGroups));
-            return activated;
+                mCommandGroup.HasMenu = true;
+                mCommandGroup.HasToolbar = true;
+
+                bool activated = mCommandGroup.Activate();
+                //System.Windows.Forms.MessageBox.Show("id:" + mCommandGroupId + "group# " + nth_group + "groups count:" + ((int)mCommandManager.NumberOfGroups));
+                return activated;
+
+            }else{
+                return false;
+            }
         }
 
         private bool remove_commands()
@@ -173,8 +192,9 @@ namespace PluginClient
                 }
                 plugin_count_id++;
                 strCallback = PluginCall.prefixed_callback(plugins[i]["command"]);
+
                 group.AddCommandItem2(plugins[i]["name"], (i + 1), plugins[i]["hint"], plugins[i]["tooltip"],
-                     0, strCallback, "enable_plugin", Convert.ToInt16(plugins[i]["id"]), itemType);
+                     Convert.ToInt16(plugins[i]["icon_index"]), strCallback, "enable_plugin", Convert.ToInt16(plugins[i]["id"]), itemType);
             }
             return true;
         }

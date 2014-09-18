@@ -46,6 +46,7 @@ namespace PluginClient
                         info.Add("name", plugin_config.Attribute("name").Value);
                         info.Add("tooltip", plugin_config.Attribute("tooltip").Value);
                         info.Add("hint", plugin_config.Attribute("hint").Value);
+                        info.Add("icon_index", plugin_config.Attribute("icon_index").Value);
                         plugin_list.Add(info);
                     }
 
