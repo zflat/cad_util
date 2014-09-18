@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/****************************************************************************
+**
+** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of Qt Creator.
+**
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+****************************************************************************/
+
+Custom project wizard configuration example file. Note that by convention,
+the project file goes last.
+The "class" and "firstpage" attributes specify that it is a Qt 4 wizard and
+leave room for the Qt 4 target page.
+-->
+<wizard version="1" kind="project"
+        class="qt4project" firstpage="10"
+        id="A.ReceptaclePLugin" category="B.CustomProjects">
+    <icon>lib.png</icon>
+    <description>Creates a Receptacle plugin skeleton project.</description>
+    <displayname>Receptacle Plugin</displayname>;
+    <displaycategory>Custom Projects</displaycategory>
+    <files>
+        <file source="/src/worker_plugintemp.cpp" target="/src/worker_%ProjectName:l%.cpp" openeditor="true"/>
+        <file source="/include/worker_plugintemp.h" target="/include/worker_%ProjectName:l%.h" openeditor="false"/>
+        <file source="/include/util_interface_plugintemp.h" target="/include/util_interface_%ProjectName:l%.h" openeditor="false"/>
+        <file source="project.pro" target="%ProjectName%.pro" openproject="true"/>
+    </files>
+    <!-- Create a 2nd wizard page with parameters -->
+    <fieldpagetitle>Receptacle Plugin Parameters</fieldpagetitle>
+    <fields>
+        <field mandatory="true" name="NAME">
+            <fieldcontrol class="QLineEdit" validator='^[^"]+$'
+                          defaulttext="Plugin %ProjectName%" placeholdertext="Enter the plugin name"/>
+            <fielddescription>Plugin name:</fielddescription>
+            <fielddescription xml:lang="de">Hallo-Welt-Nachricht:</fielddescription>
+        </field>
+        <field mandatory="true" name="DESCRIPTION">
+            <fieldcontrol class="QLineEdit" validator='^[^"]+$'
+                          defaulttext="Utility to perform %ProjectName% functionality" placeholdertext="Enter the plugin description"/>
+            <fielddescription>Plugin description:</fielddescription>
+        </field>
+        <field mandatory="true" name="COMMAND">
+            <fieldcontrol class="QLineEdit" validator='^[^"]+$'
+                          defaulttext="%ProjectName%" placeholdertext="Enter the plugin command"/>
+            <fielddescription>Plugin command:</fielddescription>
+        </field>
+    </fields>
+</wizard>
