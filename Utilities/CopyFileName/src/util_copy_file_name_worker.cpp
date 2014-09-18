@@ -24,6 +24,7 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QThread>
 #include <QLabel>
 #include <QApplication>
+#include <QScreen>
 
 #include "util_copy_file_name_worker.h"
 
@@ -74,6 +75,18 @@ void UtilCopyFileNameWorker::start(){
       }else{
           qWarning() << "No active document";
       }
+  }
+/*
+  int arg_c=0;
+  char* arg_arr[1];
+  qDebug() << "Screen info: ";
+  QGuiApplication*  a = new QGuiApplication(arg_c, arg_arr);
+  */
+  foreach (QScreen *screen, qApp->screens()){
+      qDebug() << "Screen DPI X: " << screen->physicalDotsPerInchX();
+      qDebug() << "Screen DPI Y: " << screen->physicalDotsPerInchY();
+      qDebug() << "Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
+
   }
 
   delete context;
