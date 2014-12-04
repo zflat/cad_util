@@ -55,6 +55,7 @@ void UtilCopyFileNameWorker::start(){
 
   SldContext * context = new SldContext();
   ISldWorksPtr swAppPtr = context->get_swApp();
+  QString qstr_fname;
 
   if(swAppPtr){
       IModelDoc2Ptr swModel;
@@ -65,28 +66,30 @@ void UtilCopyFileNameWorker::start(){
       }else if(swModel){      
           BSTR fileName;
           hres = swModel->GetPathName(&fileName);
-          
           if(FAILED(hres)){
               qWarning() << "Could not get the path name of the active document.";
+          }else if(::SysStringLen(fileName)!=0){
+              qstr_fname = QString((QChar*)fileName, ::SysStringLen(fileName));
+              Q_EMIT fname_retrieved(qstr_fname);
           }else{
-              QString qstr((QChar*)fileName, ::SysStringLen(fileName));
-              Q_EMIT fname_retrieved(qstr);
+              qWarning() << "File is not saved to disk. Falling back on the window title.";
+              // handle the case when a file is not saved to disk
+              swModel->GetTitle(&fileName);
+
+              if(FAILED(hres)){
+                  qWarning() << "Could not get the title of the active document.";
+              }else{
+                  qstr_fname = QString((QChar*)fileName, ::SysStringLen(fileName));
+                  Q_EMIT fname_retrieved(qstr_fname);
+              }
           }
+
+
+
+
       }else{
           qWarning() << "No active document";
       }
-  }
-/*
-  int arg_c=0;
-  char* arg_arr[1];
-  qDebug() << "Screen info: ";
-  QGuiApplication*  a = new QGuiApplication(arg_c, arg_arr);
-  */
-  foreach (QScreen *screen, qApp->screens()){
-      qDebug() << "Screen DPI X: " << screen->physicalDotsPerInchX();
-      qDebug() << "Screen DPI Y: " << screen->physicalDotsPerInchY();
-      qDebug() << "Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
-
   }
 
   delete context;
