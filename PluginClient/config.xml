@@ -5,6 +5,7 @@
   <Config command="SafeSaveAsCopy" id="3" name="Save as Copy" tooltip="Save as copy and open new file"  hint="Save as copy and open new file" icon_index="" />
   <Config command="CopyFileName" id="4" name="Copy File Name" tooltip="Copy file name to clipboard"  hint="Copy file name to clipboard" icon_index="2" />
   <Config command="RandomColorChange" id="5" name="Random Color Change" tooltip="Change to rancom color"  hint="Change to random color" icon_index="0" />
+  <Config command="ZoomLifeSize" id="6" name="Zoom Life Size" tooltip="Zoom to life size (1:1)"  hint="Zoom to life size (1:1)" icon_index="" />
   <Config command="" id="0" name="Utility Selector" tooltip="Open the launcher to select a utility"  hint="Select a utilty to run" icon_index="" />
   <Config command="exit" id="1" name="Restart Launcher" tooltip="Restart launcher"  hint="Restart the add-in" icon_index="" />
 </ConfigurationFile>
