@@ -25,6 +25,7 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLabel>
 #include <QClipboard>
 #include <QApplication>
+#include <QTime>
 
 #include "util_interface_random_color_change.h"
 #include "worker_random_color_change.h"
@@ -39,7 +40,7 @@ WorkerRandomColorChange::WorkerRandomColorChange(int argc, char *argv[], QObject
 }
 
 void WorkerRandomColorChange::init(){
-    UtilWorker::init();
+    UtilWorker::init();    
     qDebug() << "Utility initialized";
 }
 
@@ -47,6 +48,8 @@ void WorkerRandomColorChange::start(){
 
   SldContext * context = new SldContext();
   ISldWorksPtr swAppPtr = context->get_swApp();
+
+  qsrand(QTime::currentTime().msec());
 
   if(swAppPtr){
       IModelDoc2Ptr swModel;
