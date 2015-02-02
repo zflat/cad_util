@@ -39,7 +39,7 @@ class Info : public QObject, public UtilInterface
 
 public:
     UtilWorker* newWorker(){
-        return UTIL_NEW_WORKER;
+        return new WorkerRandomColorChange();
     }
 
     virtual QString name() const{

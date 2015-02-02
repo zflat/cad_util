@@ -8,12 +8,12 @@
 #include <QObject>
 #include "util_worker.h"
 
-#define UTIL_NEW_WORKER new WorkerRandomColorChange()
 class WorkerRandomColorChange : public UtilWorker
 {
     Q_OBJECT
 public:
     WorkerRandomColorChange(int argc=0, char *argv[]=NULL, QObject* parent=0);
+    ~WorkerRandomColorChange();
     void start();
     void init();
     void cleanup();

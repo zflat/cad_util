@@ -39,6 +39,12 @@ WorkerRandomColorChange::WorkerRandomColorChange(int argc, char *argv[], QObject
     meta_hash.insert("silent", "true");
 }
 
+WorkerRandomColorChange::~WorkerRandomColorChange(){
+    if(NULL != widget)
+        delete widget;
+    widget = NULL;
+}
+
 void WorkerRandomColorChange::init(){
     UtilWorker::init();    
     qDebug() << "Utility initialized";
