@@ -18,7 +18,7 @@ NameReporterWidget::~NameReporterWidget()
 }
 
 void NameReporterWidget::report_action(const QString & name){
-    qDebug() << name.toStdString().c_str();
+
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(name);
     ui->lineEdit->setText(name);

@@ -25,6 +25,7 @@ along with Receptacle.  If not, see <http://www.gnu.org/licenses/>.
 #include <QLabel>
 #include <QApplication>
 #include <QScreen>
+#include <QFileInfo>
 
 #include "util_copy_file_name_worker.h"
 
@@ -53,7 +54,13 @@ QObject* UtilCopyFileNameWorker::get_widget(){
 
 void UtilCopyFileNameWorker::start(){
 
-  SldContext * context = new SldContext();
+
+  SldContext * context = new SldContext();  
+  try{
+
+  if(0 != context->vault()->login()){
+      qWarning() << "Could not connect to the PDMW vault.";
+  }
   ISldWorksPtr swAppPtr = context->get_swApp();
   QString qstr_fname;
 
@@ -70,6 +77,28 @@ void UtilCopyFileNameWorker::start(){
               qWarning() << "Could not get the path name of the active document.";
           }else if(::SysStringLen(fileName)!=0){
               qstr_fname = QString((QChar*)fileName, ::SysStringLen(fileName));
+
+              // Give vault info
+              HRESULT vault_hr;
+              BSTR rev = SysAllocString(L"");
+              QFileInfo fileInfo(qstr_fname);
+              BSTR fileNameOnly = SysAllocString(fileInfo.fileName().toStdWString().c_str());
+
+              IPDMWDocumentPtr doc;
+              vault_hr = context->get_swVault()->GetSpecificDocument(fileNameOnly, rev, &doc);
+              if(FAILED(vault_hr)){
+                  qDebug() << "Faild to query the vault: " << vault_hr;
+              }else if(doc){
+                  qDebug() << "Document found in the vault.";
+                  BSTR bstrVal;
+                  vault_hr = doc->get_Revision(&bstrVal);
+                  if(!FAILED(vault_hr)){
+                      QString strVal = QString((QChar*)bstrVal, ::SysStringLen(bstrVal));
+                      qDebug() << "Vault rev value: " + strVal;
+                  }
+              }else{
+                  qDebug() << "Document " << fileInfo.fileName() << "not found in the vault.";
+              }
               Q_EMIT fname_retrieved(qstr_fname);
           }else{
               qWarning() << "File is not saved to disk. Falling back on the window title.";
@@ -83,15 +112,14 @@ void UtilCopyFileNameWorker::start(){
                   Q_EMIT fname_retrieved(qstr_fname);
               }
           }
-
-
-
-
       }else{
           qWarning() << "No active document";
       }
   }
 
+    }catch(...){
+        qCritical()<< "A critical error occured";
+    }
   delete context;
   emit complete();
 }
