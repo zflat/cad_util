@@ -55,14 +55,43 @@ void WorkerRandomColorChange::start(){
       IModelDoc2Ptr swModel;
 
       HRESULT hres = swAppPtr->get_IActiveDoc2(&swModel);
+      bool is_recording_history = false;
       if (FAILED(hres)){
           qWarning() << " Could not get the active doc";
       }else if(swModel){
           IModelDoc2* swModelPtr = static_cast<IModelDoc2*>(swModel);
           SldModel* model = new SldModel(context,static_cast<IModelDoc2**>(&swModelPtr));
+
+          IModelDocExtensionPtr swModelExt;
+          hres = swModelPtr->get_Extension(&swModelExt);
+
+          if (FAILED(hres) && !swModelExt){
+              qWarning() << "Could not get the document extension";
+          }else{
+              hres = swModelExt->StartRecordingUndoObject();
+              if(FAILED(hres)){
+                  qWarning() << "Could not push action to undo history";
+              }else{
+                  is_recording_history = true;
+              }
+          }
+
           if( !model->change_color()){
               qWarning() << "Could not change the color of the current document";
           }
+
+          if(swModelExt && is_recording_history){
+              VARIANT_BOOL invisible = false;
+              VARIANT_BOOL outval = false;
+              BSTR history_name = SysAllocString(L"Random color change");
+              hres = swModelExt->FinishRecordingUndoObject2(history_name, invisible, &outval);
+          }
+
+          qDebug() << "Color changed";
+
+          if(swModelExt)
+            swModelExt->Release();
+
           delete model;
       }else{
           qWarning() << "No active document";
