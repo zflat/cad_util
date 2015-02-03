@@ -16,7 +16,7 @@
   !include WordFunc.nsh
   !insertmacro VersionCompare
   
-  !define VERSION "0.1.0"
+  !define VERSION "0.1.1"
   !define TITLE "CAD Utilities"
   
   !define REGPATH_WINUNINST "Software\Microsoft\Windows\CurrentVersion\Uninstall"
@@ -87,27 +87,6 @@ FunctionEnd
 ; See example at http://nsis.sourceforge.net/Simple_script:section_with_option
 
 SectionGroup /e "Utilities"
-Section "" SecDefault
-  ;Store installation folder
-  WriteRegStr HKCU "Software\${TITLE}" "" $INSTDIR    
-    
-  SetRegView 64
-    
-  ;Add uninstall information to Add/Remove Programs
-  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
-                 "${TITLE}" "${TITLE} -- Custom CAD Automation Utilities"
-  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
-                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
-                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
-
-  ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
-  IntFmt $0 "0x%08X" $0
-  WriteRegDWORD HKLM "${REGPATH_WINUNINST}\${TITLE}" "EstimatedSize" "$0"
-
-  ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-SectionEnd
 
 Section "Plugin Host" SecCpyHost
 
@@ -154,6 +133,29 @@ Section "Solidwork Addin" SecAddin
   Pop $0 # return value/error/timeout
   DetailPrint "       Return value: $0"  
 SectionEnd
+
+Section "" SecDefault
+  ;Store installation folder
+  WriteRegStr HKCU "Software\${TITLE}" "" $INSTDIR    
+    
+  SetRegView 64
+    
+  ;Add uninstall information to Add/Remove Programs
+  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
+                 "DisplayName" "${TITLE} -- Custom CAD Automation Utilities"
+  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
+                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr HKLM "${REGPATH_WINUNINST}\${TITLE}" \
+                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+
+  ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+  IntFmt $0 "0x%08X" $0
+  WriteRegDWORD HKLM "${REGPATH_WINUNINST}\${TITLE}" "EstimatedSize" "$0"
+
+  ;Create uninstaller
+  SetOutPath "$INSTDIR"
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+SectionEnd
 SectionGroupEnd
 
 
@@ -161,7 +163,7 @@ SectionGroupEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecCpyHost ${LANG_ENGLISH} "Copying files"
+  LangString DESC_SecCpyBinaries ${LANG_ENGLISH} "Copying files"
 
   LangString ConfirmUninstall ${LANG_ENGLISH} "All existing \
 	files and folders under the $(^Name) installation directory \
@@ -179,6 +181,9 @@ SectionGroupEnd
 
 Section "Uninstall"
     
+  MessageBox MB_OKCANCEL|MB_ICONINFORMATION $(ConfirmUninstall) IDOK +2
+  Abort
+  
   SetRegView 64
   ; get directory of .NET framework installation
   Push "v4.0"
@@ -196,8 +201,6 @@ Section "Uninstall"
   ;FILES TO DELETE
   Delete "$INSTDIR\Uninstall.exe"    
 
-  MessageBox MB_OKCANCEL|MB_ICONINFORMATION $(ConfirmUninstall) IDOK +2
-  Abort
   
   RMDir /r "$INSTDIR\..\${TITLE}"
 SectionEnd
