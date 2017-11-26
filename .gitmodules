@@ -1,3 +1,3 @@
 [submodule "libSldOLE"]
 	path = libSldOLE
-	url = ssh://zflat@bikecalcs.com/~/libSldOLE.git
+	url = git@github.com:zflat/libSldOLE.git
