@@ -1,14 +1,11 @@
 # CadUtil
 
-TODO: Write a description
+Automation utility and productivity tool integrated into SolidWorks as an Add-in
 
 ## Installation
 
-TODO: Write usage instalation instructions here
+See `install` directory for NSIS configuration for building the installer
 
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
